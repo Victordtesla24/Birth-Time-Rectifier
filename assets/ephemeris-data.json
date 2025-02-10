@@ -1,0 +1,173 @@
+{
+    "planets": {
+        "Sun": {
+            "symbol": "☉",
+            "color": "#FFD700",
+            "strength": 1.0
+        },
+        "Moon": {
+            "symbol": "☽",
+            "color": "#C0C0C0",
+            "strength": 0.9
+        },
+        "Mars": {
+            "symbol": "♂",
+            "color": "#FF4500",
+            "strength": 0.8
+        },
+        "Mercury": {
+            "symbol": "☿",
+            "color": "#48D1CC",
+            "strength": 0.7
+        },
+        "Jupiter": {
+            "symbol": "♃",
+            "color": "#DAA520",
+            "strength": 0.85
+        },
+        "Venus": {
+            "symbol": "♀",
+            "color": "#98FB98",
+            "strength": 0.75
+        },
+        "Saturn": {
+            "symbol": "♄",
+            "color": "#4682B4",
+            "strength": 0.7
+        },
+        "Rahu": {
+            "symbol": "☊",
+            "color": "#800080",
+            "strength": 0.6
+        },
+        "Ketu": {
+            "symbol": "☋",
+            "color": "#8B4513",
+            "strength": 0.6
+        }
+    },
+    "zodiac": {
+        "Aries": {
+            "symbol": "♈",
+            "element": "Fire",
+            "ruler": "Mars",
+            "start": 0
+        },
+        "Taurus": {
+            "symbol": "♉",
+            "element": "Earth",
+            "ruler": "Venus",
+            "start": 30
+        },
+        "Gemini": {
+            "symbol": "♊",
+            "element": "Air",
+            "ruler": "Mercury",
+            "start": 60
+        },
+        "Cancer": {
+            "symbol": "♋",
+            "element": "Water",
+            "ruler": "Moon",
+            "start": 90
+        },
+        "Leo": {
+            "symbol": "♌",
+            "element": "Fire",
+            "ruler": "Sun",
+            "start": 120
+        },
+        "Virgo": {
+            "symbol": "♍",
+            "element": "Earth",
+            "ruler": "Mercury",
+            "start": 150
+        },
+        "Libra": {
+            "symbol": "♎",
+            "element": "Air",
+            "ruler": "Venus",
+            "start": 180
+        },
+        "Scorpio": {
+            "symbol": "♏",
+            "element": "Water",
+            "ruler": "Mars",
+            "start": 210
+        },
+        "Sagittarius": {
+            "symbol": "♐",
+            "element": "Fire",
+            "ruler": "Jupiter",
+            "start": 240
+        },
+        "Capricorn": {
+            "symbol": "♑",
+            "element": "Earth",
+            "ruler": "Saturn",
+            "start": 270
+        },
+        "Aquarius": {
+            "symbol": "♒",
+            "element": "Air",
+            "ruler": "Saturn",
+            "start": 300
+        },
+        "Pisces": {
+            "symbol": "♓",
+            "element": "Water",
+            "ruler": "Jupiter",
+            "start": 330
+        }
+    },
+    "houses": {
+        "1": {
+            "name": "Ascendant",
+            "significance": ["Self", "Personality", "Physical Body"]
+        },
+        "2": {
+            "name": "Wealth",
+            "significance": ["Finances", "Speech", "Family"]
+        },
+        "3": {
+            "name": "Communication",
+            "significance": ["Siblings", "Short Journeys", "Courage"]
+        },
+        "4": {
+            "name": "Home",
+            "significance": ["Mother", "Property", "Education"]
+        },
+        "5": {
+            "name": "Children",
+            "significance": ["Creativity", "Romance", "Intelligence"]
+        },
+        "6": {
+            "name": "Health",
+            "significance": ["Service", "Enemies", "Debt"]
+        },
+        "7": {
+            "name": "Partnership",
+            "significance": ["Marriage", "Business", "Legal Matters"]
+        },
+        "8": {
+            "name": "Transformation",
+            "significance": ["Death", "Occult", "Legacy"]
+        },
+        "9": {
+            "name": "Higher Learning",
+            "significance": ["Religion", "Long Journeys", "Fortune"]
+        },
+        "10": {
+            "name": "Career",
+            "significance": ["Status", "Authority", "Father"]
+        },
+        "11": {
+            "name": "Gains",
+            "significance": ["Friends", "Goals", "Income"]
+        },
+        "12": {
+            "name": "Loss",
+            "significance": ["Spirituality", "Expenses", "Foreign Lands"]
+        }
+    }
+} 

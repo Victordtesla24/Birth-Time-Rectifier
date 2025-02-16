@@ -155,33 +155,132 @@ show_section_header() {
 }
 
 # -----------------------------
-# Enhanced Backup Function
-create_backup() {
-    local timestamp
-    timestamp=$(date +%Y%m%d_%H%M%S)
-    local backup_dir="pre_reorganization_backup_${timestamp}"
+# Function: Restructure project directory
+restructure_directory() {
+    show_section_header "Restructuring Project Directory"
     
-    show_section_header "Creating Backup"
-    show_status "info" "Initializing backup process..."
+    # Create required directories if they don't exist
+    local directories=(
+        "src/pages" "src/pages/api"
+        "src/app" "src/app/api" "src/app/layout" "src/app/components"
+        "src/components" "src/components/layout" "src/components/shared" "src/components/forms"
+        "src/lib" "src/utils" "src/hooks" "src/context"
+        "src/services" "src/api" "src/models" "src/types"
+        "src/styles" "src/assets" "src/constants"
+        "src/__tests__" "src/__tests__/unit" "src/__tests__/integration" "src/__tests__/e2e"
+        "config" "public"
+    )
     
-    mkdir -p "$backup_dir"
-    
-    local tmp_file
-    tmp_file=$(mktemp)
-    find . -type f > "$tmp_file"
-    local total_files
-    total_files=$(wc -l < "$tmp_file")
+    local total_dirs=${#directories[@]}
     local current=0
     
-    while IFS= read -r file; do
+    for dir in "${directories[@]}"; do
         ((current++))
-        show_progress $current $total_files "Backing up: ${file##*/}"
-        cp --parents "$file" "$backup_dir" 2>/dev/null || true
-    done < "$tmp_file"
+        show_progress $current $total_dirs "Creating directory: $dir"
+        mkdir -p "$dir"
+    done
     
-    rm "$tmp_file"
-    show_status "success" "Backup created successfully at: ${backup_dir}"
+    # Update import paths
+    update_all_imports
+    
+    # Update configuration files
+    update_config_paths
+    
+    show_status "success" "Directory restructuring completed successfully"
 }
+
+# -----------------------------
+# Function: Initialize Git repository and push to GitHub
+initialize_git_repo() {
+    show_section_header "Initializing Git Repository"
+    
+    # Check if .git directory exists
+    if [ -d ".git" ]; then
+        show_status "info" "Git repository already initialized"
+    else
+        show_status "info" "Initializing new Git repository..."
+        git init
+        if [ $? -ne 0 ]; then
+            show_status "error" "Failed to initialize Git repository"
+            return 1
+        fi
+    fi
+    
+    # Check if .env file exists and contains GITHUB_TOKEN
+    if [ ! -f ".env" ]; then
+        show_status "error" "Missing .env file. Please create it with your GitHub token"
+        return 1
+    fi
+    
+    # Source the .env file to get GITHUB_TOKEN
+    source .env
+    if [ -z "$GITHUB_TOKEN" ]; then
+        show_status "error" "GITHUB_TOKEN not found in .env file"
+        return 1
+    fi
+    
+    # Configure Git with token (more secure method)
+    git config --local credential.helper 'store --file ~/.git-credentials-birth-time-rectifier'
+    echo "https://${GITHUB_TOKEN}@github.com" > ~/.git-credentials-birth-time-rectifier
+    chmod 600 ~/.git-credentials-birth-time-rectifier
+    
+    # Add remote if not exists
+    if ! git remote | grep -q "origin"; then
+        git remote add origin "https://github.com/Victordtesla24/Birth-Time-Rectifier.git"
+    fi
+    
+    # Ensure .env is ignored
+    if [ -f ".gitignore" ]; then
+        if ! grep -q "^\.env$" .gitignore; then
+            echo ".env" >> .gitignore
+        fi
+    else
+        echo ".env" > .gitignore
+    fi
+    
+    show_status "success" "Git repository initialized successfully"
+    return 0
+}
+
+# -----------------------------
+# Function: Commit and push changes to GitHub
+commit_to_github() {
+    show_section_header "Committing Changes to GitHub"
+    
+    # Initialize Git repository if needed
+    initialize_git_repo
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+    
+    # Add all changes
+    show_status "info" "Adding changes to Git..."
+    git add .
+    if [ $? -ne 0 ]; then
+        show_status "error" "Failed to add changes to Git"
+        return 1
+    fi
+    
+    # Create commit
+    show_status "info" "Creating commit..."
+    git commit -m "Project Directory Manager Backup commit"
+    if [ $? -ne 0 ]; then
+        show_status "error" "Failed to create commit"
+        return 1
+    fi
+    
+    # Push changes
+    show_status "info" "Pushing changes to GitHub..."
+    git push origin main
+    if [ $? -ne 0 ]; then
+        show_status "error" "Failed to push changes to GitHub"
+        return 1
+    fi
+    
+    show_status "success" "Changes successfully pushed to GitHub"
+    return 0
+}
+
 # -----------------------------
 # Function: Find & show duplicate files with enhanced detection
 find_duplicates() {
@@ -426,13 +525,18 @@ EOL
     done
     echo -e "${GREEN}Configuration paths updated successfully${NC}"
 }
+
 # -----------------------------
 # Function: Verify project structure with progress and VERCEL compliance
 verify_structure() {
-    echo -e "\n${BLUE}Verifying project structure against VERCEL deployment guidelines...${NC}"
+    echo -e "\n${BLUE}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+    echo -e "${BLUE}┃${NC}     ${BOLD}VERCEL Project Structure Verification${NC}     ${BLUE}┃${NC}"
+    echo -e "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}\n"
+    
     local errors=0
     local warnings=0
     local found_items=0
+    local suggestions=()
 
     # Define the VERCEL-prescribed directory structure
     local required_dirs=(
@@ -460,118 +564,257 @@ verify_structure() {
         "src/constants/index.ts" "src/types/index.ts"
     )
     
-    echo -e "\n${YELLOW}Scanning current project structure...${NC}"
+    echo -e "${CYAN}Phase 1:${NC} ${BOLD}Scanning Project Structure${NC}\n"
     local total_checks=$(( ${#required_dirs[@]} + ${#required_files[@]} + ${#recommended_patterns[@]} ))
     local current=0
-    local tmp_dir
-    tmp_dir=$(mktemp -d)
+    local tmp_dir=$(mktemp -d)
     local structure_report="${tmp_dir}/structure_report.txt"
     
-    # Check required directories
-    echo -e "\n${BLUE}Checking required directories...${NC}"
+    # Check required directories with enhanced progress bar
+    echo -e "${YELLOW}▶ Checking Required Directories${NC}"
     for dir in "${required_dirs[@]}"; do
         ((current++))
-        show_progress $current $total_checks "Analyzing: $dir"
-        if [ ! -d "$dir" ]; then
-            echo -e "\n${RED}Error: Required directory '$dir' is missing${NC}" | tee -a "$structure_report"
-            ((errors++))
+        
+        # Calculate progress
+        local width=50
+        local progress=$(( current * width / total_checks ))
+        local percent=$(( current * 100 / total_checks ))
+        
+        # Clear line and move cursor to start
+        printf "\r\033[K"
+        
+        # Draw box container with fixed width
+        printf "${BLUE}┃${NC} "
+        
+        # Draw progress bar with gradient and fixed width
+        for ((i=0; i<width; i++)); do
+            if [ $i -lt $progress ]; then
+                if [ $i -lt $(( progress / 2 )) ]; then
+                    printf "${GREEN}█${NC}"
+                else
+                    printf "${CYAN}█${NC}"
+                fi
+            elif [ $i -eq $progress ]; then
+                printf "${YELLOW}▌${NC}"
+            else
+                printf "${DIM}░${NC}"
+            fi
+        done
+        
+        # Draw right border and percentage with fixed width
+        printf " ${BLUE}┃${NC} "
+        if [ $percent -eq 100 ]; then
+            printf "${GREEN}%3d%%${NC}" "$percent"
         else
-            ((found_items++))
-            # Specific checks for known directories
+            printf "${YELLOW}%3d%%${NC}" "$percent"
+        fi
+        
+        # Draw spinner with fixed width
+        local spinchars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+        printf " ${CYAN}%s${NC}" "${spinchars[current % 10]}"
+        
+        # Draw task info with fixed width and proper escaping
+        printf " %-40s" "Checking: ${DIM}${dir}${NC}"
+        
+        # Add small delay for smooth animation
+        sleep 0.05
+        
+        # Handle missing directories with proper formatting
+        if [ ! -d "$dir" ]; then
+            printf "\n${RED}✗ Missing:${NC} %s\n" "$dir"
+            ((errors++))
             case "$dir" in
-                "src/pages")
-                    if [ ! -f "$dir/_app.tsx" ] || [ ! -f "$dir/_document.tsx" ]; then
-                        echo -e "${YELLOW}Warning: Missing core Next.js files in $dir${NC}" | tee -a "$structure_report"
-                        ((warnings++))
-                    fi
-                    ;;
                 "src/app")
-                    if [ ! -f "$dir/layout.tsx" ] || [ ! -f "$dir/page.tsx" ]; then
-                        echo -e "${YELLOW}Warning: Missing App Router files in $dir${NC}" | tee -a "$structure_report"
-                        ((warnings++))
-                    fi
+                    suggestions+=("${CYAN}→ Create Next.js App Router structure:${NC}\n   mkdir -p src/app && touch src/app/page.tsx src/app/layout.tsx")
                     ;;
-                "src/components")
-                    if [ ! -d "$dir/shared" ] || [ ! -d "$dir/layout" ]; then
-                        echo -e "${YELLOW}Warning: Recommended component organization missing in $dir${NC}" | tee -a "$structure_report"
-                        ((warnings++))
-                    fi
+                "src/components/layout")
+                    suggestions+=("${CYAN}→ Setup component architecture:${NC}\n   mkdir -p src/components/{layout,shared,forms}")
+                    ;;
+                ".vercel")
+                    suggestions+=("${CYAN}→ Initialize Vercel:${NC}\n   vercel login && vercel link")
+                    ;;
+                *)
+                    suggestions+=("${CYAN}→ Create directory:${NC}\n   mkdir -p $dir")
                     ;;
             esac
+        else
+            ((found_items++))
         fi
-        sleep 0.05
     done
-    
-    # Check required files
-    echo -e "\n${BLUE}Checking required files...${NC}"
+
+    # Check required files with enhanced progress bar
+    echo -e "\n\n${YELLOW}▶ Checking Required Files${NC}"
     for file in "${required_files[@]}"; do
         ((current++))
-        show_progress $current $total_checks "Analyzing: $file"
+        
+        # Calculate progress
+        local width=50
+        local progress=$(( current * width / total_checks ))
+        local percent=$(( current * 100 / total_checks ))
+        
+        # Clear line and move cursor to start
+        printf "\r\033[K"
+        
+        # Draw box container with fixed width
+        printf "${BLUE}┃${NC} "
+        
+        # Draw progress bar with gradient and fixed width
+        for ((i=0; i<width; i++)); do
+            if [ $i -lt $progress ]; then
+                if [ $i -lt $(( progress / 2 )) ]; then
+                    printf "${GREEN}█${NC}"
+                else
+                    printf "${CYAN}█${NC}"
+                fi
+            elif [ $i -eq $progress ]; then
+                printf "${YELLOW}▌${NC}"
+            else
+                printf "${DIM}░${NC}"
+            fi
+        done
+        
+        # Draw right border and percentage with fixed width
+        printf " ${BLUE}┃${NC} "
+        if [ $percent -eq 100 ]; then
+            printf "${GREEN}%3d%%${NC}" "$percent"
+        else
+            printf "${YELLOW}%3d%%${NC}" "$percent"
+        fi
+        
+        # Draw spinner with fixed width
+        local spinchars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+        printf " ${CYAN}%s${NC}" "${spinchars[current % 10]}"
+        
+        # Draw task info with fixed width and proper escaping
+        printf " %-40s" "Checking: ${DIM}${file}${NC}"
+        
+        # Add small delay for smooth animation
+        sleep 0.05
+        
+        # Handle missing files with proper formatting
         if [ ! -f "$file" ]; then
-            echo -e "\n${RED}Error: Required file '$file' is missing${NC}" | tee -a "$structure_report"
+            printf "\n${RED}✗ Missing:${NC} %s\n" "$file"
             ((errors++))
         else
             ((found_items++))
             case "$file" in
                 "next.config.js")
                     if ! grep -q "module.exports" "$file"; then
-                        echo -e "${YELLOW}Warning: next.config.js might not be properly configured${NC}" | tee -a "$structure_report"
+                        printf "\n${YELLOW}⚠ Warning:${NC} next.config.js might not be properly configured\n"
                         ((warnings++))
                     fi
                     ;;
                 "vercel.json")
                     if ! grep -q "\"version\":" "$file"; then
-                        echo -e "${YELLOW}Warning: vercel.json might be missing version configuration${NC}" | tee -a "$structure_report"
+                        printf "\n${YELLOW}⚠ Warning:${NC} vercel.json might be missing version configuration\n"
                         ((warnings++))
                     fi
                     ;;
                 "tsconfig.json")
                     if ! grep -q "\"baseUrl\":" "$file"; then
-                        echo -e "${YELLOW}Warning: tsconfig.json might be missing path configurations${NC}" | tee -a "$structure_report"
+                        printf "\n${YELLOW}⚠ Warning:${NC} tsconfig.json might be missing path configurations\n"
                         ((warnings++))
                     fi
                     ;;
             esac
         fi
-        sleep 0.05
     done
-    
-    # Check recommended patterns
-    echo -e "\n${BLUE}Checking recommended patterns...${NC}"
+
+    # Check recommended patterns with enhanced progress bar
+    echo -e "\n\n${YELLOW}▶ Checking Recommended Patterns${NC}"
     for pattern in "${recommended_patterns[@]}"; do
         ((current++))
-        show_progress $current $total_checks "Analyzing: $pattern"
+        
+        # Calculate progress
+        local width=50
+        local progress=$(( current * width / total_checks ))
+        local percent=$(( current * 100 / total_checks ))
+        
+        # Clear line and move cursor to start
+        printf "\r\033[K"
+        
+        # Draw box container with fixed width
+        printf "${BLUE}┃${NC} "
+        
+        # Draw progress bar with gradient and fixed width
+        for ((i=0; i<width; i++)); do
+            if [ $i -lt $progress ]; then
+                if [ $i -lt $(( progress / 2 )) ]; then
+                    printf "${GREEN}█${NC}"
+                else
+                    printf "${CYAN}█${NC}"
+                fi
+            elif [ $i -eq $progress ]; then
+                printf "${YELLOW}▌${NC}"
+            else
+                printf "${DIM}░${NC}"
+            fi
+        done
+        
+        # Draw right border and percentage with fixed width
+        printf " ${BLUE}┃${NC} "
+        if [ $percent -eq 100 ]; then
+            printf "${GREEN}%3d%%${NC}" "$percent"
+        else
+            printf "${YELLOW}%3d%%${NC}" "$percent"
+        fi
+        
+        # Draw spinner with fixed width
+        local spinchars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+        printf " ${CYAN}%s${NC}" "${spinchars[current % 10]}"
+        
+        # Draw task info with fixed width and proper escaping
+        printf " %-40s" "Checking: ${DIM}${pattern}${NC}"
+        
+        # Add small delay for smooth animation
+        sleep 0.05
+        
+        # Handle missing patterns with proper formatting
         if [ ! -f "$pattern" ]; then
-            echo -e "\n${YELLOW}Warning: Recommended pattern '$pattern' not found${NC}" | tee -a "$structure_report"
+            printf "\n${YELLOW}⚠ Missing:${NC} %s\n" "$pattern"
             ((warnings++))
         else
             ((found_items++))
         fi
-        sleep 0.05
     done
-    
+
     local total_items=$(( ${#required_dirs[@]} + ${#required_files[@]} + ${#recommended_patterns[@]} ))
     local mismatch_percentage=$(( (($total_items - $found_items) * 100) / $total_items ))
     
-    echo -e "\n${BLUE}Structure Analysis Summary:${NC}"
-    echo -e "╔════════════════════════════════════════════╗"
-    echo -e "║ Structure Mismatch: ${RED}${mismatch_percentage}%${NC}                        ║"
-    echo -e "║ Critical Errors: ${RED}${errors}${NC}                              ║"
-    echo -e "║ Warnings: ${YELLOW}${warnings}${NC}                                  ║"
-    echo -e "╚════════════════════════════════════════════╝"
-    
-    if [ -f "$structure_report" ]; then
-        echo -e "\n${BLUE}Detailed Analysis Report:${NC}"
-        cat "$structure_report"
+    echo -e "\n\n${BLUE}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+    echo -e "${BLUE}┃${NC}     ${BOLD}Verification Summary${NC}     ${BLUE}┃${NC}"
+    echo -e "${BLUE}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
+    printf "${BLUE}┃${NC} %-20s ${RED}%3d%%${NC}                                        ${BLUE}┃${NC}\n" "Structure Mismatch:" "$mismatch_percentage"
+    printf "${BLUE}┃${NC} %-20s ${RED}%3d${NC}                                           ${BLUE}┃${NC}\n" "Critical Errors:" "$errors"
+    printf "${BLUE}┃${NC} %-20s ${YELLOW}%3d${NC}                                           ${BLUE}┃${NC}\n" "Warnings:" "$warnings"
+    echo -e "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+
+    if [ ${#suggestions[@]} -gt 0 ]; then
+        echo -e "\n${BLUE}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+        echo -e "${BLUE}┃${NC}     ${BOLD}Suggested Actions${NC}     ${BLUE}┃${NC}"
+        echo -e "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+        echo -e "\n${YELLOW}To fix the identified issues, consider the following steps:${NC}\n"
+        for suggestion in "${suggestions[@]}"; do
+            echo -e "$suggestion"
+        done
+        
+        # Add general recommendations
+        echo -e "\n${YELLOW}General Recommendations:${NC}"
+        echo -e "1. ${CYAN}Initialize Next.js project:${NC}"
+        echo -e "   npx create-next-app@latest --typescript"
+        echo -e "2. ${CYAN}Setup testing infrastructure:${NC}"
+        echo -e "   npm install --save-dev jest @testing-library/react @testing-library/jest-dom"
+        echo -e "3. ${CYAN}Configure Vercel deployment:${NC}"
+        echo -e "   npm install -g vercel && vercel login"
     fi
-    
+
     rm -rf "$tmp_dir"
     
     if [ $errors -eq 0 ]; then
         if [ $warnings -eq 0 ]; then
             echo -e "\n${GREEN}✓ Project structure fully compliant with VERCEL guidelines${NC}"
         else
-            echo -e "\n${YELLOW}⚠️  Project structure mostly compliant, but has some recommendations to address${NC}"
+            echo -e "\n${YELLOW}⚠️  Project structure mostly compliant, with minor recommendations${NC}"
         fi
         return 0
     else
@@ -601,7 +844,7 @@ main_menu() {
         printf "${CYAN}2.${NC} Remove duplicate, redundant files\n"
         printf "${CYAN}3.${NC} Restructure the directory\n"
         printf "${CYAN}4.${NC} Verify project structure\n"
-        printf "${CYAN}5.${NC} Create backup\n"
+        printf "${CYAN}5.${NC} Commit changes to GitHub\n"
         printf "${CYAN}6.${NC} Exit\n"
         
         printf "\n${CYAN}Enter your choice [1-6]: ${NC}"
@@ -616,25 +859,26 @@ main_menu() {
                 read -p "$(printf "${CYAN}Are you sure you want to proceed? (y/n): ${NC}")" confirm
                 if [[ $confirm == [yY] ]]; then
                     remove_duplicates
+                    commit_to_github
                 fi
                 ;;
             3)
                 show_status "warning" "This action will restructure your entire project"
                 read -p "$(printf "${CYAN}Are you sure you want to proceed? (y/n): ${NC}")" confirm
                 if [[ $confirm == [yY] ]]; then
-                    create_backup
                     restructure_directory
                     verify_structure
+                    commit_to_github
                 fi
                 ;;
             4)
                 verify_structure
                 ;;
             5)
-                create_backup
+                commit_to_github
                 ;;
             6)
-                show_status "success" "Thank you for using the Project Directory Manager!"
+                show_status "success" "Thank you for using the Project Directory Manager! Have a great day!"
                 exit 0
                 ;;
             *)

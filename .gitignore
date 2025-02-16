@@ -6,19 +6,36 @@
 # testing
 /coverage
 
+# next.js
+/.next/
+/out/
+
 # production
 /build
 
 # misc
 .DS_Store
+*.pem
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
 # IDE
 .idea/
@@ -49,15 +66,6 @@ wheels/
 .installed.cfg
 *.egg
 
-# Vercel
-.vercel/
-.now/
-
-# Local development
-.env
-.env.local
-.env.*.local
-
 # Logs
 logs/
 *.log
@@ -71,11 +79,6 @@ logs/
 venv/
 __pycache__/
 *.pyc
-
-# Environment
-.env
-.env.local
-.env.*.local
 
 # IDE
 .vscode/

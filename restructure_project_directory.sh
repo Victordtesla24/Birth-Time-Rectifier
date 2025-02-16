@@ -238,6 +238,12 @@ initialize_git_repo() {
         echo ".env" > .gitignore
     fi
     
+    # Configure Git user if not set
+    if [ -z "$(git config --get user.email)" ]; then
+        git config --local user.email "victordtesla24@gmail.com"
+        git config --local user.name "Victordtesla24"
+    fi
+    
     show_status "success" "Git repository initialized successfully"
     return 0
 }
@@ -253,12 +259,42 @@ commit_to_github() {
         return 1
     fi
     
+    # Fetch latest changes
+    show_status "info" "Fetching latest changes..."
+    git fetch origin
+    if [ $? -ne 0 ]; then
+        show_status "error" "Failed to fetch from remote"
+        return 1
+    fi
+    
+    # Check if we need to pull changes
+    local LOCAL=$(git rev-parse @)
+    local REMOTE=$(git rev-parse @{u} 2>/dev/null)
+    local BASE=$(git merge-base @ @{u} 2>/dev/null)
+    
+    if [ $? -eq 0 ] && [ "$LOCAL" != "$REMOTE" ]; then
+        if [ "$LOCAL" = "$BASE" ]; then
+            show_status "info" "Remote changes detected, pulling updates..."
+            git pull --rebase origin main
+            if [ $? -ne 0 ]; then
+                show_status "error" "Failed to pull remote changes"
+                return 1
+            fi
+        fi
+    fi
+    
     # Add all changes
     show_status "info" "Adding changes to Git..."
     git add .
     if [ $? -ne 0 ]; then
         show_status "error" "Failed to add changes to Git"
         return 1
+    fi
+    
+    # Check if there are changes to commit
+    if git diff-index --quiet HEAD --; then
+        show_status "info" "No changes to commit"
+        return 0
     fi
     
     # Create commit
@@ -271,7 +307,7 @@ commit_to_github() {
     
     # Push changes
     show_status "info" "Pushing changes to GitHub..."
-    git push origin main
+    git push -u origin main
     if [ $? -ne 0 ]; then
         show_status "error" "Failed to push changes to GitHub"
         return 1

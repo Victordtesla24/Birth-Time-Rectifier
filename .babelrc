@@ -1,12 +1,35 @@
 {
   "presets": [
-    ["@babel/preset-env", {
-      "targets": {
-        "node": "current"
+    [
+      "next/babel",
+      {
+        "preset-react": {
+          "runtime": "automatic",
+          "importSource": "@emotion/react"
+        }
       }
-    }]
+    ]
   ],
   "plugins": [
-    "@babel/plugin-transform-modules-commonjs"
+    "@emotion/babel-plugin",
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "@": "./src",
+          "@components": "./src/components",
+          "@utils": "./src/utils",
+          "@services": "./src/services",
+          "@types": "./src/types",
+          "@assets": "./src/assets",
+          "@styles": "./src/styles",
+          "@managers": "./src/managers",
+          "@constants": "./src/constants",
+          "@shared": "./src/shared",
+          "@backend": "./src/backend"
+        }
+      }
+    ]
   ]
-}
+} 

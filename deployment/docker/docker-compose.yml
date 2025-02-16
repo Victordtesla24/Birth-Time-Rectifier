@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/frontend.Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    volumes:
+      - ../../src:/app/src
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/backend.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/birth_time_rectifier
+      - REDIS_URL=redis://cache:6379/0
+    volumes:
+      - ../../src/backend:/app/backend
+    depends_on:
+      - db
+      - cache
+
+  db:
+    image: timescale/timescaledb:latest-pg14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=birth_time_rectifier
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  celery_worker:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/backend.Dockerfile
+    command: celery -A backend.core.celery worker --loglevel=info
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/birth_time_rectifier
+      - REDIS_URL=redis://cache:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - ../../src/backend:/app/backend
+    depends_on:
+      - db
+      - cache
+      - rabbitmq
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data: 

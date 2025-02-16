@@ -1,0 +1,17 @@
+{
+    "What is your career path?": "तुमचा व्यवसाय मार्ग काय आहे?",
+    "Can you describe any significant life event that occurred in your life?": "तुमच्या आयुष्यात घडलेल्या कोणत्याही महत्त्वपूर्ण घटनेचे वर्णन करू शकता?",
+    "Career": "व्यवसाय",
+    "Relationship": "नाते",
+    "Education": "शिक्षण",
+    "Health": "आरोग्य",
+    "Other": "इतर",
+    "Business": "व्यवसाय",
+    "Service": "नोकरी",
+    "Self-employed": "स्वयंरोजगार",
+    "When did this event occur?": "ही घटना कधी घडली?",
+    "How certain are you about this?": "तुम्हाला याबद्दल किती खात्री आहे?",
+    "Very certain": "खूप खात्री",
+    "Somewhat certain": "काहीसे खात्री",
+    "Not very certain": "फारशी खात्री नाही"
+} 

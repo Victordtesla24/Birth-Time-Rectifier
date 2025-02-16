@@ -1,9 +1,109 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Vercel
+.vercel/
+.now/
+
+# Local development
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Backups
+.backups/
+*.bak
+*.backup
+
+# Environment
+venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+
+# OS
+Thumbs.db
+
+# Project specific
+codebase_backup_*
+pre_reorganization_backup_*
+*.tar.gz
+
+# Python
 venv/
 .env
 .coverage
@@ -15,7 +115,6 @@ coverage.xml
 .hypothesis/
 
 # Node.js
-node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -27,10 +126,6 @@ test-reports/
 coverage/
 .nyc_output/
 htmlcov/
-
-# IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-.DS_Store
+.husky/

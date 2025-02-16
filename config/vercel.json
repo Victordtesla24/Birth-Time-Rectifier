@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/server.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/server.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.9",
+    "NODE_VERSION": "16.x"
+  },
+  "functions": {
+    "backend/server.py": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
+} 

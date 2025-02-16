@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="9" failures="2" errors="0" time="9.853">
+  <testsuite name="QuestionnaireGenerator" errors="0" failures="1" skipped="0" timestamp="2025-02-15T17:10:40" time="5.567" tests="8">
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should generate sections based on confidence metrics" time="0.008">
+    </testcase>
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should prioritize sections based on confidence scores" time="0">
+    </testcase>
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should generate physical verification questions for low physical confidence" time="0">
+    </testcase>
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should generate event verification questions for low event confidence" time="0">
+    </testcase>
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should generate timing verification questions for low overall confidence" time="0">
+    </testcase>
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should include ML-based insight questions" time="0.007">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 1
+Received: 0
+    at Object.&lt;anonymous&gt; (/Users/Shared/cursor/Birth-Time-Rectifier/__tests__/unit/utils/QuestionnaireGenerator.test.ts:149:45)
+    at Promise.then.completed (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:121:9)
+    at _runTestsForDescribeBlock (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:121:9)
+    at run (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should handle empty insights array" time="0">
+    </testcase>
+    <testcase classname="QuestionnaireGenerator › generateQuestionnaire" name="should handle missing birth data" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="1" skipped="0" timestamp="2025-02-15T17:10:48" time="0.755" tests="1">
+    <testcase classname="" name="System Integration Tests" time="0.001">
+      <failure>ReferenceError: fetch is not defined
+    at /Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:7:22
+    at step (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:33:23)
+    at Object.next (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:14:53)
+    at /Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:8:71
+    at new Promise (&lt;anonymous&gt;)
+    at Object.&lt;anonymous&gt;.__awaiter (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:4:12)
+    at testApiHealthcheck (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:43:12)
+    at /Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:81:11
+    at step (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:33:23)
+    at Object.next (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:14:53)
+    at /Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:8:71
+    at new Promise (&lt;anonymous&gt;)
+    at Object.&lt;anonymous&gt;.__awaiter (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:4:12)
+    at Object.&lt;anonymous&gt; (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/frontend/system.test.tsx:79:34)
+    at Promise.then.completed (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:126:9)
+    at run (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/Users/Shared/cursor/Birth-Time-Rectifier/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

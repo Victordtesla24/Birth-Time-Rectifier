@@ -1,0 +1,205 @@
+.vedic-chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.vedic-chart-container canvas {
+    display: block;
+    margin: 0 auto;
+}
+
+.divisional-charts-container {
+    padding: 2rem;
+    background: #f8f9fa;
+}
+
+.chart-tab {
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chart-info {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chart-info h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.chart-info .text-muted {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.chart-analysis h5 {
+    color: #34495e;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.chart-analysis ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.chart-analysis li {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.chart-analysis li strong {
+    color: #2c3e50;
+}
+
+/* Tabs styling */
+.nav-tabs {
+    border-bottom: none;
+    margin-bottom: 1rem;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #2c3e50;
+    background: rgba(44, 62, 80, 0.05);
+}
+
+.nav-tabs .nav-link.active {
+    color: #2c3e50;
+    background: #fff;
+    border-bottom: 3px solid #007bff;
+}
+
+/* Download section */
+.download-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.download-section .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+/* Planet and zodiac symbols */
+.planet-symbol {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+.zodiac-symbol {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+/* Aspect lines */
+.aspect-line {
+    stroke-width: 1px;
+    opacity: 0.6;
+}
+
+.aspect-line.conjunction {
+    stroke: #2ecc71;
+}
+
+.aspect-line.opposition {
+    stroke: #e74c3c;
+}
+
+.aspect-line.trine {
+    stroke: #3498db;
+}
+
+.aspect-line.square {
+    stroke: #f1c40f;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .divisional-charts-container {
+        padding: 1rem;
+    }
+    
+    .chart-tab {
+        padding: 1rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .chart-info {
+        margin-top: 1.5rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .divisional-charts-container {
+        background: #1a1a1a;
+    }
+    
+    .chart-tab,
+    .chart-info,
+    .download-section {
+        background: #2d2d2d;
+    }
+    
+    .chart-info h4,
+    .chart-analysis h5 {
+        color: #e1e1e1;
+    }
+    
+    .nav-tabs .nav-link {
+        color: #a0a0a0;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: #fff;
+        background: #2d2d2d;
+        border-bottom-color: #0d6efd;
+    }
+    
+    .chart-analysis li {
+        background: #363636;
+    }
+    
+    .chart-analysis li strong {
+        color: #e1e1e1;
+    }
+} 

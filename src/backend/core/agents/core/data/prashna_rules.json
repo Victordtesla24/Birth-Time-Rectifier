@@ -1,0 +1,72 @@
+{
+    "career": [
+        {
+            "condition": "tenth_house_strong",
+            "question_template": "Did you experience a significant career change around {tenth_house_period}?",
+            "options": ["Yes, exactly at that time", "Around that time", "No", "Not sure"],
+            "weight_modifier": 1.2
+        },
+        {
+            "condition": "jupiter_tenth",
+            "question_template": "Was there a promotion or career growth around {jupiter_period}?",
+            "options": ["Yes, major growth", "Some progress", "No change", "Not sure"],
+            "weight_modifier": 1.1
+        }
+    ],
+    "relationship": [
+        {
+            "condition": "seventh_house_strong",
+            "question_template": "Did you have any significant relationship developments around {seventh_house_period}?",
+            "options": ["Yes, major change", "Minor developments", "No changes", "Not sure"],
+            "weight_modifier": 1.2
+        },
+        {
+            "condition": "venus_strong",
+            "question_template": "Were there any relationship milestones around {venus_period}?",
+            "options": ["Yes, significant", "Some developments", "No", "Not sure"],
+            "weight_modifier": 1.1
+        }
+    ],
+    "education": [
+        {
+            "condition": "fifth_house_strong",
+            "question_template": "Did you start or complete any education around {fifth_house_period}?",
+            "options": ["Started new course", "Completed education", "No educational changes", "Not sure"],
+            "weight_modifier": 1.2
+        },
+        {
+            "condition": "jupiter_fifth",
+            "question_template": "Was there any academic achievement around {jupiter_period}?",
+            "options": ["Major achievement", "Some progress", "No achievement", "Not sure"],
+            "weight_modifier": 1.1
+        }
+    ],
+    "health": [
+        {
+            "condition": "sixth_house_strong",
+            "question_template": "Were there any health-related events around {sixth_house_period}?",
+            "options": ["Major health event", "Minor health issues", "No health issues", "Not sure"],
+            "weight_modifier": 1.2
+        },
+        {
+            "condition": "mars_sixth",
+            "question_template": "Did you experience any physical health changes around {mars_period}?",
+            "options": ["Significant changes", "Minor changes", "No changes", "Not sure"],
+            "weight_modifier": 1.1
+        }
+    ],
+    "spirituality": [
+        {
+            "condition": "ninth_house_strong",
+            "question_template": "Did you have any spiritual experiences around {ninth_house_period}?",
+            "options": ["Significant experience", "Some experiences", "No experiences", "Not sure"],
+            "weight_modifier": 1.2
+        },
+        {
+            "condition": "jupiter_ninth",
+            "question_template": "Was there a shift in your spiritual understanding around {jupiter_period}?",
+            "options": ["Major shift", "Some changes", "No change", "Not sure"],
+            "weight_modifier": 1.1
+        }
+    ]
+} 

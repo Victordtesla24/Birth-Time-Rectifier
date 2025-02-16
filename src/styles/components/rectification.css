@@ -1,0 +1,234 @@
+.rectification-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Progress Tracker */
+.progress-tracker {
+    margin-bottom: 3rem;
+}
+
+.steps-progress {
+    position: relative;
+    padding: 0 1rem;
+}
+
+.step-indicators {
+    position: relative;
+    margin-top: -12px;
+}
+
+.step-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    text-align: center;
+}
+
+.indicator-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    border: 2px solid #dee2e6;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.step-indicator.active .indicator-dot {
+    background-color: #007bff;
+    border-color: #0056b3;
+}
+
+.indicator-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.step-indicator.active .indicator-label {
+    color: #007bff;
+}
+
+/* Step Content */
+.step-content {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+}
+
+/* Analysis Step */
+.analysis-step {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* Results Step */
+.results-step {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.time-adjustment {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.time-adjustment .lead {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #007bff;
+    margin: 1rem 0;
+}
+
+.confidence-score {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.explanation {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+/* Final Step */
+.final-step {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.verification-list {
+    margin: 2rem 0;
+}
+
+.verification-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.verification-item i {
+    font-size: 1.25rem;
+    margin-right: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-content {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Loading State */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Error State */
+.alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .rectification-container {
+        padding: 1rem;
+    }
+
+    .indicator-label {
+        font-size: 0.75rem;
+        display: none;
+    }
+
+    .step-indicator:hover .indicator-label {
+        display: block;
+        position: absolute;
+        top: 100%;
+        background-color: #fff;
+        padding: 0.5rem;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 2;
+    }
+
+    .time-adjustment .lead {
+        font-size: 1.5rem;
+    }
+
+    .verification-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .verification-item i {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .rectification-container {
+        background-color: #1a1a1a;
+        color: #fff;
+    }
+
+    .step-content,
+    .results-step,
+    .final-step {
+        background-color: #2d2d2d;
+    }
+
+    .time-adjustment,
+    .confidence-score,
+    .explanation,
+    .verification-item {
+        background-color: #363636;
+    }
+
+    .indicator-dot {
+        background-color: #363636;
+        border-color: #4a4a4a;
+    }
+
+    .step-indicator.active .indicator-dot {
+        background-color: #0d6efd;
+        border-color: #0a58ca;
+    }
+
+    .indicator-label {
+        color: #a0a0a0;
+    }
+
+    .step-indicator.active .indicator-label {
+        color: #0d6efd;
+    }
+} 

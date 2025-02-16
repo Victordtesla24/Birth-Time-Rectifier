@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # Project Directory Management Script for VERCEL Deployment
-# Version 2.3.2 - Enhanced Visuals & Professional Terminal Output
+# Version 2.3.3 - Enhanced Visuals & GitHub Error Handling
 #
 # This script manages project directory structure, handles duplicate files,
 # and ensures compliance with VERCEL deployment guidelines. It supports:
@@ -12,10 +12,11 @@
 # Improvements:
 #   • Dynamic terminal width calculation for progress visuals.
 #   • Smooth, consistently redrawn progress bar and spinner.
-#   • Unicode and ANSI colors for a polished look.
+#   • ANSI colors and Unicode characters for a polished look.
+#   • GitHub push retry on non–fast-forward errors.
 #
 # References:
-#   :contentReference[oaicite:2]{index=2}, :contentReference[oaicite:3]{index=3}
+#   :contentReference[oaicite:0]{index=0}, :contentReference[oaicite:1]{index=1}
 # =============================================================================
 
 # -----------------------------
@@ -50,7 +51,6 @@ show_progress() {
     local percent=$(( current * 100 / total ))
     local remaining=$(( total - current ))
     
-    # Get terminal width to avoid overflow
     local term_width
     term_width=$(tput cols)
     
@@ -111,7 +111,6 @@ show_spinner() {
     local spinner_chars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
     local delay=0.1
 
-    # Draw a centered message box using BOX_WIDTH
     local msg_len=${#message}
     local total_padding=$(( BOX_WIDTH - msg_len ))
     local left_padding=$(( total_padding / 2 ))
@@ -121,7 +120,6 @@ show_spinner() {
     printf "${BLUE}┃${NC}%*s%s%*s${BLUE}┃${NC}\n" "$left_padding" "" "$message" "$right_padding" ""
     printf "${BLUE}┗$(printf '━%.0s' $(seq 1 $BOX_WIDTH))┛${NC}\n"
     
-    # Animate spinner
     while kill -0 "$pid" 2>/dev/null; do
         for spinner in "${spinner_chars[@]}"; do
             printf "\r${BLUE}[${NC}${CYAN}$spinner${NC}${BLUE}]${NC} ${DIM}Processing...${NC}"
@@ -150,51 +148,15 @@ show_section_header() {
     local width=68
     local padding=$(( (width - ${#title}) / 2 ))
     printf "\n${BLUE}┏$(printf '━%.0s' $(seq 1 $width))┓${NC}\n"
-    printf "${BLUE}┃${NC}%*s${BOLD}%s${NC}%*s${BLUE}┃${NC}\n" "$padding" "" "$title" "$padding" ""
+    # Use printf "%b" to interpret ANSI escapes in title text
+    printf "${BLUE}┃${NC}%*s%b%*s${BLUE}┃${NC}\n" "$padding" "" " ${BOLD}${title}${NC}" "$padding" ""
     printf "${BLUE}┗$(printf '━%.0s' $(seq 1 $width))┛${NC}\n"
 }
-
 # -----------------------------
-# Function: Restructure project directory
-restructure_directory() {
-    show_section_header "Restructuring Project Directory"
-    
-    # Create required directories if they don't exist
-    local directories=(
-        "src/pages" "src/pages/api"
-        "src/app" "src/app/api" "src/app/layout" "src/app/components"
-        "src/components" "src/components/layout" "src/components/shared" "src/components/forms"
-        "src/lib" "src/utils" "src/hooks" "src/context"
-        "src/services" "src/api" "src/models" "src/types"
-        "src/styles" "src/assets" "src/constants"
-        "src/__tests__" "src/__tests__/unit" "src/__tests__/integration" "src/__tests__/e2e"
-        "config" "public"
-    )
-    
-    local total_dirs=${#directories[@]}
-    local current=0
-    
-    for dir in "${directories[@]}"; do
-        ((current++))
-        show_progress $current $total_dirs "Creating directory: $dir"
-        mkdir -p "$dir"
-    done
-    
-    # Update import paths
-    update_all_imports
-    
-    # Update configuration files
-    update_config_paths
-    
-    show_status "success" "Directory restructuring completed successfully"
-}
-
-# -----------------------------
-# Function: Initialize Git repository and push to GitHub
+# Function: Initialize Git repository (with GitHub credentials)
 initialize_git_repo() {
     show_section_header "Initializing Git Repository"
     
-    # Check if .git directory exists
     if [ -d ".git" ]; then
         show_status "info" "Git repository already initialized"
     else
@@ -206,30 +168,27 @@ initialize_git_repo() {
         fi
     fi
     
-    # Check if .env file exists and contains GITHUB_TOKEN
     if [ ! -f ".env" ]; then
         show_status "error" "Missing .env file. Please create it with your GitHub token"
         return 1
     fi
     
-    # Source the .env file to get GITHUB_TOKEN
+    # Source the .env file for GITHUB_TOKEN
     source .env
     if [ -z "$GITHUB_TOKEN" ]; then
         show_status "error" "GITHUB_TOKEN not found in .env file"
         return 1
     fi
     
-    # Configure Git with token (more secure method)
-    git config --local credential.helper 'store --file ~/.git-credentials-birth-time-rectifier'
+    # Configure Git credentials using a secure helper
+    git config --local credential.helper "store --file ~/.git-credentials-birth-time-rectifier"
     echo "https://${GITHUB_TOKEN}@github.com" > ~/.git-credentials-birth-time-rectifier
     chmod 600 ~/.git-credentials-birth-time-rectifier
     
-    # Add remote if not exists
     if ! git remote | grep -q "origin"; then
         git remote add origin "https://github.com/Victordtesla24/Birth-Time-Rectifier.git"
     fi
     
-    # Ensure .env is ignored
     if [ -f ".gitignore" ]; then
         if ! grep -q "^\.env$" .gitignore; then
             echo ".env" >> .gitignore
@@ -238,7 +197,6 @@ initialize_git_repo() {
         echo ".env" > .gitignore
     fi
     
-    # Configure Git user if not set
     if [ -z "$(git config --get user.email)" ]; then
         git config --local user.email "victordtesla24@gmail.com"
         git config --local user.name "Victordtesla24"
@@ -249,17 +207,15 @@ initialize_git_repo() {
 }
 
 # -----------------------------
-# Function: Commit and push changes to GitHub
+# Function: Commit and push changes to GitHub with retry on non-fast-forward error
 commit_to_github() {
     show_section_header "Committing Changes to GitHub"
     
-    # Initialize Git repository if needed
     initialize_git_repo
     if [ $? -ne 0 ]; then
         return 1
     fi
     
-    # Fetch latest changes
     show_status "info" "Fetching latest changes..."
     git fetch origin
     if [ $? -ne 0 ]; then
@@ -267,12 +223,15 @@ commit_to_github() {
         return 1
     fi
     
-    # Check if we need to pull changes
-    local LOCAL=$(git rev-parse @)
-    local REMOTE=$(git rev-parse @{u} 2>/dev/null)
-    local BASE=$(git merge-base @ @{u} 2>/dev/null)
+    # Check branch status
+    local LOCAL
+    LOCAL=$(git rev-parse @)
+    local REMOTE
+    REMOTE=$(git rev-parse @{u} 2>/dev/null)
+    local BASE
+    BASE=$(git merge-base @ @{u} 2>/dev/null)
     
-    if [ $? -eq 0 ] && [ "$LOCAL" != "$REMOTE" ]; then
+    if [ -n "$REMOTE" ] && [ "$LOCAL" != "$REMOTE" ]; then
         if [ "$LOCAL" = "$BASE" ]; then
             show_status "info" "Remote changes detected, pulling updates..."
             git pull --rebase origin main
@@ -283,7 +242,6 @@ commit_to_github() {
         fi
     fi
     
-    # Add all changes
     show_status "info" "Adding changes to Git..."
     git add .
     if [ $? -ne 0 ]; then
@@ -291,13 +249,11 @@ commit_to_github() {
         return 1
     fi
     
-    # Check if there are changes to commit
     if git diff-index --quiet HEAD --; then
         show_status "info" "No changes to commit"
         return 0
     fi
     
-    # Create commit
     show_status "info" "Creating commit..."
     git commit -m "Project Directory Manager Backup commit"
     if [ $? -ne 0 ]; then
@@ -305,12 +261,20 @@ commit_to_github() {
         return 1
     fi
     
-    # Push changes
     show_status "info" "Pushing changes to GitHub..."
     git push -u origin main
     if [ $? -ne 0 ]; then
-        show_status "error" "Failed to push changes to GitHub"
-        return 1
+        show_status "warning" "Push failed, attempting to pull changes and push again..."
+        git pull --rebase origin main
+        if [ $? -ne 0 ]; then
+            show_status "error" "Failed to pull remote changes during push retry"
+            return 1
+        fi
+        git push -u origin main
+        if [ $? -ne 0 ]; then
+            show_status "error" "Failed to push changes to GitHub after retry"
+            return 1
+        fi
     fi
     
     show_status "success" "Changes successfully pushed to GitHub"
@@ -318,252 +282,7 @@ commit_to_github() {
 }
 
 # -----------------------------
-# Function: Find & show duplicate files with enhanced detection
-find_duplicates() {
-    echo -e "\n${BLUE}Scanning for duplicate files...${NC}"
-    
-    # Define directories to exclude
-    local exclude_dirs="venv|node_modules|.git|.next|build|dist|coverage"
-    
-    # Create temporary files for results
-    local tmp_dir
-    tmp_dir=$(mktemp -d)
-    local files_list="${tmp_dir}/files.txt"
-    local duplicates_list="${tmp_dir}/duplicates.txt"
-    
-    # Find all files, excluding specified directories
-    find . -type f -not -path "*/\.*" | grep -vE "/(${exclude_dirs})/" > "$files_list"
-    
-    # Count total files
-    local total_files
-    total_files=$(wc -l < "$files_list")
-    local count=0
-    
-    echo -e "\n${GREEN}Analyzing files for duplicates...${NC}"
-    
-    while IFS= read -r file; do
-        ((count++))
-        show_progress $count $total_files "Analyzing: ${file##*/}"
-        if [ -f "$file" ]; then
-            # Use shasum for hash calculation (compatible with macOS and Linux)
-            local hash
-            hash=$(shasum "$file" | cut -d' ' -f1)
-            echo "${hash}|${file}" >> "$duplicates_list"
-        fi
-    done < "$files_list"
-    
-    echo -e "\n\n${GREEN}Analysis complete. Duplicate files found:${NC}"
-    
-    local duplicate_found=0
-    while IFS='|' read -r hash file; do
-        local occurrences
-        occurrences=$(grep "^${hash}|" "$duplicates_list" | wc -l)
-        if [ "$occurrences" -gt 1 ]; then
-            duplicate_found=1
-            echo -e "${YELLOW}-----------------------------------------${NC}"
-            echo -e "${BLUE}Files with hash: ${hash}${NC}"
-            grep "^${hash}|" "$duplicates_list" | cut -d'|' -f2
-            echo "Duplication: 100%"
-        fi
-    done < <(sort -u "$duplicates_list")
-    
-    if [ $duplicate_found -eq 0 ]; then
-        echo -e "${GREEN}No duplicate files found.${NC}"
-    fi
-    
-    rm -rf "$tmp_dir"
-}
-
-# -----------------------------
-# Function: Remove duplicate/redundant files with progress
-remove_duplicates() {
-    echo -e "\n${BLUE}Removing duplicate files (preserving consolidated files)...${NC}"
-    
-    local tmp_dir
-    tmp_dir=$(mktemp -d)
-    local files_list="${tmp_dir}/files.txt"
-    local duplicates_list="${tmp_dir}/duplicates.txt"
-    
-    local exclude_dirs="venv|node_modules|.git|.next|build|dist|coverage"
-    
-    find . -type f -not -path "*/\.*" | grep -vE "/(${exclude_dirs})/" > "$files_list"
-    
-    local total_files
-    total_files=$(wc -l < "$files_list")
-    local count=0
-    
-    echo -e "\n${YELLOW}Analyzing files...${NC}"
-    
-    while IFS= read -r file; do
-        ((count++))
-        show_progress $count $total_files "Processing: ${file##*/}"
-        # Skip consolidated files
-        if [[ "$file" == *".consolidated"* ]]; then
-            continue
-        fi
-        if [ -f "$file" ]; then
-            local hash
-            hash=$(shasum "$file" | cut -d' ' -f1)
-            echo "${hash}|${file}" >> "$duplicates_list"
-        fi
-    done < "$files_list"
-    
-    echo -e "\n\n${BLUE}Removing duplicates...${NC}"
-    local total_duplicates=0
-    local removed=0
-    
-    while IFS='|' read -r hash file; do
-        local occurrences
-        occurrences=$(grep "^${hash}|" "$duplicates_list" | wc -l)
-        if [ "$occurrences" -gt 1 ]; then
-            ((total_duplicates++))
-        fi
-    done < "$duplicates_list"
-    
-    while IFS='|' read -r hash file; do
-        local first_file
-        first_file=$(grep "^${hash}|" "$duplicates_list" | head -1 | cut -d'|' -f2)
-        if [ "$file" != "$first_file" ]; then
-            ((removed++))
-            show_progress $removed $total_duplicates "Removing: ${file##*/}"
-            rm "$file"
-        fi
-    done < "$duplicates_list"
-    
-    rm -rf "$tmp_dir"
-    echo -e "\n${GREEN}Duplicate removal complete. Removed $removed files.${NC}"
-}
-
-# -----------------------------
-# Function: Update import paths in a file
-update_imports() {
-    local file=$1
-    local old_path=$2
-    local new_path=$3
-    
-    echo -e "${BLUE}Updating imports in: ${file}${NC}"
-    
-    local tmp_file="${file}.tmp"
-    case "${file##*.}" in
-        ts|tsx|js|jsx)
-            if is_macos; then
-                sed -E "s|from ['\"]\\.\\./${old_path}|from '${new_path}|g" "$file" > "$tmp_file"
-                sed -i '' "s|from ['\"]\\./${old_path}|from '${new_path}|g" "$tmp_file"
-                sed -i '' "s|from ['\"]\@/${old_path}|from '${new_path}|g" "$tmp_file"
-                sed -i '' "s|require(['\"]\\.\\./${old_path}|require('${new_path}|g" "$tmp_file"
-                sed -i '' "s|require(['\"]\\./${old_path}|require('${new_path}|g" "$tmp_file"
-                sed -i '' "s|require(['\"]\@/${old_path}|require('${new_path}|g" "$tmp_file"
-            else
-                sed -E "s|from ['\"]\\.\\./${old_path}|from '${new_path}|g" "$file" > "$tmp_file"
-                sed -i "s|from ['\"]\\./${old_path}|from '${new_path}|g" "$tmp_file"
-                sed -i "s|from ['\"]\@/${old_path}|from '${new_path}|g" "$tmp_file"
-                sed -i "s|require(['\"]\\.\\./${old_path}|require('${new_path}|g" "$tmp_file"
-                sed -i "s|require(['\"]\\./${old_path}|require('${new_path}|g" "$tmp_file"
-                sed -i "s|require(['\"]\@/${old_path}|require('${new_path}|g" "$tmp_file"
-            fi
-            ;;
-        py)
-            if is_macos; then
-                sed -i '' "s|from ${old_path//\//\.}|from ${new_path//\//\.}|g" "$file"
-                sed -i '' "s|import ${old_path//\//\.}|import ${new_path//\//\.}|g" "$file"
-            else
-                sed -i "s|from ${old_path//\//\.}|from ${new_path//\//\.}|g" "$file"
-                sed -i "s|import ${old_path//\//\.}|import ${new_path//\//\.}|g" "$file"
-            fi
-            ;;
-    esac
-    mv "$tmp_file" "$file"
-}
-
-# -----------------------------
-# Function: Update all imports after restructuring
-update_all_imports() {
-    echo -e "\n${BLUE}Updating import paths across the project...${NC}"
-    
-    local tmp_dir
-    tmp_dir=$(mktemp -d)
-    local path_mapping="${tmp_dir}/path_mapping.txt"
-    
-    echo -e "\n${YELLOW}Building path mapping...${NC}"
-    
-    local total_files
-    total_files=$(find ./src -type f | wc -l)
-    local count=0
-    
-    find ./src -type f | while read -r file; do
-        ((count++))
-        show_progress $count $total_files "Scanning: ${file##*/}"
-        if [[ -f "$file" ]]; then
-            local ext="${file##*.}"
-            if [[ "$ext" =~ ^(ts|tsx|js|jsx|py)$ ]]; then
-                local rel_path="${file#./src/}"
-                echo "${rel_path%/*}|@/${rel_path%/*}" >> "$path_mapping"
-            fi
-        fi
-    done
-    
-    echo -e "\n\n${BLUE}Updating imports in files...${NC}"
-    
-    local total_updates
-    total_updates=$(find ./src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" \) | wc -l)
-    local current=0
-    
-    find ./src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" \) | while read -r file; do
-        ((current++))
-        show_progress $current $total_updates "Updating: ${file##*/}"
-        while IFS='|' read -r old_path new_path; do
-            update_imports "$file" "$old_path" "$new_path"
-        done < "$path_mapping"
-    done
-    
-    rm -rf "$tmp_dir"
-    echo -e "\n${GREEN}Import paths updated successfully${NC}"
-}
-
-# -----------------------------
-# Function: Update tsconfig/jsconfig paths
-update_config_paths() {
-    echo -e "\n${BLUE}Updating TypeScript/JavaScript configuration paths...${NC}"
-    
-    local config_files=("tsconfig.json" "jsconfig.json")
-    for config_file in "${config_files[@]}"; do
-        if [[ -f "$config_file" ]]; then
-            echo -e "${YELLOW}Updating paths in ${config_file}...${NC}"
-            local tmp_file="${config_file}.tmp"
-            cat > "$tmp_file" << EOL
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@services/*": ["./src/services/*"],
-      "@types/*": ["./src/types/*"],
-      "@styles/*": ["./src/styles/*"],
-      "@constants/*": ["./src/constants/*"],
-      "@tests/*": ["./src/__tests__/*"]
-    }
-  }
-}
-EOL
-            if [ -f "$config_file" ]; then
-                if is_macos; then
-                    jq -s '.[0] * .[1]' "$config_file" "$tmp_file" > "${tmp_file}.merged"
-                else
-                    jq -s '.[0] * .[1]' "$config_file" "$tmp_file" > "${tmp_file}.merged"
-                fi
-                mv "${tmp_file}.merged" "$config_file"
-            else
-                mv "$tmp_file" "$config_file"
-            fi
-        fi
-    done
-    echo -e "${GREEN}Configuration paths updated successfully${NC}"
-}
-
-# -----------------------------
-# Function: Verify project structure with progress and VERCEL compliance
+# Function: Verify project structure with improved progress visuals
 verify_structure() {
     echo -e "\n${BLUE}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
     echo -e "${BLUE}┃${NC}     ${BOLD}VERCEL Project Structure Verification${NC}     ${BLUE}┃${NC}"
@@ -574,90 +293,25 @@ verify_structure() {
     local found_items=0
     local suggestions=()
 
-    # Define the VERCEL-prescribed directory structure
-    local required_dirs=(
-        "src/pages" "src/pages/api" "public" 
-        "src/app" "src/app/api" "src/app/layout" "src/app/components"
-        "src/components" "src/components/layout" "src/components/shared" "src/components/forms"
-        "src/lib" "src/utils" "src/hooks" "src/context"
-        "src/services" "src/api" "src/models" "src/types"
-        "src/styles" "src/assets" "src/constants"
-        "src/__tests__" "src/__tests__/unit" "src/__tests__/integration" "src/__tests__/e2e"
-        "config" ".vercel"
-    )
-    
-    local required_files=(
-        "src/pages/_app.tsx" "src/pages/_document.tsx" "src/pages/index.tsx"
-        "src/app/layout.tsx" "src/app/page.tsx"
-        "next.config.js" "tsconfig.json" "package.json" ".env.local" "vercel.json"
-        "README.md" "src/types/index.d.ts" "src/styles/globals.css"
-        "jest.config.js" "src/setupTests.ts"
-    )
-    
-    local recommended_patterns=(
-        "src/middleware.ts" "src/pages/api/[...path].ts" "src/components/layout/Layout.tsx"
-        "src/lib/auth.ts" "src/lib/db.ts" "src/lib/api-client.ts"
-        "src/constants/index.ts" "src/types/index.ts"
-    )
-    
+    # Define required directories, files, and recommended patterns
+    local required_dirs=( "src/pages" "src/pages/api" "public" "src/app" "src/app/api" "src/app/layout" "src/app/components" "src/components" "src/components/layout" "src/components/shared" "src/components/forms" "src/lib" "src/utils" "src/hooks" "src/context" "src/services" "src/api" "src/models" "src/types" "src/styles" "src/assets" "src/constants" "src/__tests__" "src/__tests__/unit" "src/__tests__/integration" "src/__tests__/e2e" "config" ".vercel" )
+    local required_files=( "src/pages/_app.tsx" "src/pages/_document.tsx" "src/pages/index.tsx" "src/app/layout.tsx" "src/app/page.tsx" "next.config.js" "tsconfig.json" "package.json" ".env.local" "vercel.json" "README.md" "src/types/index.d.ts" "src/styles/globals.css" "jest.config.js" "src/setupTests.ts" )
+    local recommended_patterns=( "src/middleware.ts" "src/pages/api/[...path].ts" "src/components/layout/Layout.tsx" "src/lib/auth.ts" "src/lib/db.ts" "src/lib/api-client.ts" "src/constants/index.ts" "src/types/index.ts" )
+
     echo -e "${CYAN}Phase 1:${NC} ${BOLD}Scanning Project Structure${NC}\n"
     local total_checks=$(( ${#required_dirs[@]} + ${#required_files[@]} + ${#recommended_patterns[@]} ))
     local current=0
-    local tmp_dir=$(mktemp -d)
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
     local structure_report="${tmp_dir}/structure_report.txt"
-    
-    # Check required directories with enhanced progress bar
+
+    # Check required directories
     echo -e "${YELLOW}▶ Checking Required Directories${NC}"
     for dir in "${required_dirs[@]}"; do
         ((current++))
-        
-        # Calculate progress
-        local width=50
-        local progress=$(( current * width / total_checks ))
-        local percent=$(( current * 100 / total_checks ))
-        
-        # Clear line and move cursor to start
-        printf "\r\033[K"
-        
-        # Draw box container with fixed width
-        printf "${BLUE}┃${NC} "
-        
-        # Draw progress bar with gradient and fixed width
-        for ((i=0; i<width; i++)); do
-            if [ $i -lt $progress ]; then
-                if [ $i -lt $(( progress / 2 )) ]; then
-                    printf "${GREEN}█${NC}"
-                else
-                    printf "${CYAN}█${NC}"
-                fi
-            elif [ $i -eq $progress ]; then
-                printf "${YELLOW}▌${NC}"
-            else
-                printf "${DIM}░${NC}"
-            fi
-        done
-        
-        # Draw right border and percentage with fixed width
-        printf " ${BLUE}┃${NC} "
-        if [ $percent -eq 100 ]; then
-            printf "${GREEN}%3d%%${NC}" "$percent"
-        else
-            printf "${YELLOW}%3d%%${NC}" "$percent"
-        fi
-        
-        # Draw spinner with fixed width
-        local spinchars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
-        printf " ${CYAN}%s${NC}" "${spinchars[current % 10]}"
-        
-        # Draw task info with fixed width and proper escaping
-        printf " %-40s" "Checking: ${DIM}${dir}${NC}"
-        
-        # Add small delay for smooth animation
-        sleep 0.05
-        
-        # Handle missing directories with proper formatting
+        show_progress $current $total_checks "$(printf "%b" "Checking: ${DIM}${dir}${NC}")"
         if [ ! -d "$dir" ]; then
-            printf "\n${RED}✗ Missing:${NC} %s\n" "$dir"
+            printf "\n${RED}✗ Missing:${NC} %s\n" "$dir" | tee -a "$structure_report"
             ((errors++))
             case "$dir" in
                 "src/app")
@@ -676,60 +330,16 @@ verify_structure() {
         else
             ((found_items++))
         fi
+        sleep 0.05
     done
 
-    # Check required files with enhanced progress bar
-    echo -e "\n\n${YELLOW}▶ Checking Required Files${NC}"
+    # Check required files
+    echo -e "\n${YELLOW}▶ Checking Required Files${NC}"
     for file in "${required_files[@]}"; do
         ((current++))
-        
-        # Calculate progress
-        local width=50
-        local progress=$(( current * width / total_checks ))
-        local percent=$(( current * 100 / total_checks ))
-        
-        # Clear line and move cursor to start
-        printf "\r\033[K"
-        
-        # Draw box container with fixed width
-        printf "${BLUE}┃${NC} "
-        
-        # Draw progress bar with gradient and fixed width
-        for ((i=0; i<width; i++)); do
-            if [ $i -lt $progress ]; then
-                if [ $i -lt $(( progress / 2 )) ]; then
-                    printf "${GREEN}█${NC}"
-                else
-                    printf "${CYAN}█${NC}"
-                fi
-            elif [ $i -eq $progress ]; then
-                printf "${YELLOW}▌${NC}"
-            else
-                printf "${DIM}░${NC}"
-            fi
-        done
-        
-        # Draw right border and percentage with fixed width
-        printf " ${BLUE}┃${NC} "
-        if [ $percent -eq 100 ]; then
-            printf "${GREEN}%3d%%${NC}" "$percent"
-        else
-            printf "${YELLOW}%3d%%${NC}" "$percent"
-        fi
-        
-        # Draw spinner with fixed width
-        local spinchars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
-        printf " ${CYAN}%s${NC}" "${spinchars[current % 10]}"
-        
-        # Draw task info with fixed width and proper escaping
-        printf " %-40s" "Checking: ${DIM}${file}${NC}"
-        
-        # Add small delay for smooth animation
-        sleep 0.05
-        
-        # Handle missing files with proper formatting
+        show_progress $current $total_checks "$(printf "%b" "Checking: ${DIM}${file}${NC}")"
         if [ ! -f "$file" ]; then
-            printf "\n${RED}✗ Missing:${NC} %s\n" "$file"
+            printf "\n${RED}✗ Missing:${NC} %s\n" "$file" | tee -a "$structure_report"
             ((errors++))
         else
             ((found_items++))
@@ -754,64 +364,21 @@ verify_structure() {
                     ;;
             esac
         fi
+        sleep 0.05
     done
 
-    # Check recommended patterns with enhanced progress bar
-    echo -e "\n\n${YELLOW}▶ Checking Recommended Patterns${NC}"
+    # Check recommended patterns
+    echo -e "\n${YELLOW}▶ Checking Recommended Patterns${NC}"
     for pattern in "${recommended_patterns[@]}"; do
         ((current++))
-        
-        # Calculate progress
-        local width=50
-        local progress=$(( current * width / total_checks ))
-        local percent=$(( current * 100 / total_checks ))
-        
-        # Clear line and move cursor to start
-        printf "\r\033[K"
-        
-        # Draw box container with fixed width
-        printf "${BLUE}┃${NC} "
-        
-        # Draw progress bar with gradient and fixed width
-        for ((i=0; i<width; i++)); do
-            if [ $i -lt $progress ]; then
-                if [ $i -lt $(( progress / 2 )) ]; then
-                    printf "${GREEN}█${NC}"
-                else
-                    printf "${CYAN}█${NC}"
-                fi
-            elif [ $i -eq $progress ]; then
-                printf "${YELLOW}▌${NC}"
-            else
-                printf "${DIM}░${NC}"
-            fi
-        done
-        
-        # Draw right border and percentage with fixed width
-        printf " ${BLUE}┃${NC} "
-        if [ $percent -eq 100 ]; then
-            printf "${GREEN}%3d%%${NC}" "$percent"
-        else
-            printf "${YELLOW}%3d%%${NC}" "$percent"
-        fi
-        
-        # Draw spinner with fixed width
-        local spinchars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
-        printf " ${CYAN}%s${NC}" "${spinchars[current % 10]}"
-        
-        # Draw task info with fixed width and proper escaping
-        printf " %-40s" "Checking: ${DIM}${pattern}${NC}"
-        
-        # Add small delay for smooth animation
-        sleep 0.05
-        
-        # Handle missing patterns with proper formatting
+        show_progress $current $total_checks "$(printf "%b" "Checking: ${DIM}${pattern}${NC}")"
         if [ ! -f "$pattern" ]; then
-            printf "\n${YELLOW}⚠ Missing:${NC} %s\n" "$pattern"
+            printf "\n${YELLOW}⚠ Missing:${NC} %s\n" "$pattern" | tee -a "$structure_report"
             ((warnings++))
         else
             ((found_items++))
         fi
+        sleep 0.05
     done
 
     local total_items=$(( ${#required_dirs[@]} + ${#required_files[@]} + ${#recommended_patterns[@]} ))
@@ -824,24 +391,19 @@ verify_structure() {
     printf "${BLUE}┃${NC} %-20s ${RED}%3d${NC}                                           ${BLUE}┃${NC}\n" "Critical Errors:" "$errors"
     printf "${BLUE}┃${NC} %-20s ${YELLOW}%3d${NC}                                           ${BLUE}┃${NC}\n" "Warnings:" "$warnings"
     echo -e "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
-
+    
     if [ ${#suggestions[@]} -gt 0 ]; then
         echo -e "\n${BLUE}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
         echo -e "${BLUE}┃${NC}     ${BOLD}Suggested Actions${NC}     ${BLUE}┃${NC}"
         echo -e "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
         echo -e "\n${YELLOW}To fix the identified issues, consider the following steps:${NC}\n"
         for suggestion in "${suggestions[@]}"; do
-            echo -e "$suggestion"
+            printf "%b\n" "$suggestion"
         done
-        
-        # Add general recommendations
         echo -e "\n${YELLOW}General Recommendations:${NC}"
-        echo -e "1. ${CYAN}Initialize Next.js project:${NC}"
-        echo -e "   npx create-next-app@latest --typescript"
-        echo -e "2. ${CYAN}Setup testing infrastructure:${NC}"
-        echo -e "   npm install --save-dev jest @testing-library/react @testing-library/jest-dom"
-        echo -e "3. ${CYAN}Configure Vercel deployment:${NC}"
-        echo -e "   npm install -g vercel && vercel login"
+        echo -e "1. ${CYAN}Initialize Next.js project:${NC}\n   npx create-next-app@latest --typescript"
+        echo -e "2. ${CYAN}Setup testing infrastructure:${NC}\n   npm install --save-dev jest @testing-library/react @testing-library/jest-dom"
+        echo -e "3. ${CYAN}Configure Vercel deployment:${NC}\n   npm install -g vercel && vercel login"
     fi
 
     rm -rf "$tmp_dir"
@@ -858,7 +420,6 @@ verify_structure() {
         return 1
     fi
 }
-
 # -----------------------------
 # Main Professional Menu with Enhanced Visuals
 main_menu() {
@@ -872,7 +433,8 @@ main_menu() {
         local right_padding=$(( total_padding - left_padding ))
         
         printf "${BLUE}┏$(printf '━%.0s' $(seq 1 $BOX_WIDTH))┓${NC}\n"
-        printf "${BLUE}┃${NC}%*s%s%*s${BLUE}┃${NC}\n" "$left_padding" "" "$title" "$right_padding" ""
+        # Use "%b" to interpret ANSI escape sequences in the header
+        printf "${BLUE}┃${NC}%*s%b%*s${BLUE}┃${NC}\n" "$left_padding" "" " ${BOLD}${title}${NC}" "$right_padding" ""
         printf "${BLUE}┗$(printf '━%.0s' $(seq 1 $BOX_WIDTH))┛${NC}\n"
         
         # Display menu options

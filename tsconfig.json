@@ -16,6 +16,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": "src",
+    "types": [
+      "node",
+      "jest",
+      "@playwright/test"
+    ],
     "paths": {
       "@/*": ["*"],
       "@components/*": ["components/*"],
@@ -33,4 +38,4 @@
   },
   "include": ["src"],
   "exclude": ["node_modules"]
-} 
+}

@@ -38,29 +38,14 @@ QUESTION_CATEGORIES = [
 ]
 
 def get_chart_service():
-    """Get the chart service instance."""
-    logger.warning("Using placeholder chart service")
-    # Return a placeholder service that returns empty data
-    class ChartServicePlaceholder:
-        async def get_chart(self, chart_id: str) -> Dict[str, Any]:
-            logger.warning(f"Using placeholder chart service for ID: {chart_id}")
-            # Return a minimal chart data structure with some placeholder planets and houses
-            return {
-                "planets": {
-                    "Sun": {"sign": "Aries", "house": 1},
-                    "Moon": {"sign": "Taurus", "house": 2},
-                    "Mercury": {"sign": "Gemini", "house": 3}
-                },
-                "houses": {
-                    "1": {"sign": "Aries"},
-                    "7": {"sign": "Libra"},
-                    "10": {"sign": "Capricorn"}
-                },
-                "aspects": [
-                    {"aspect_type": "conjunction", "planet1": "Sun", "planet2": "Mercury"}
-                ]
-            }
-    return ChartServicePlaceholder()
+    """Get the real chart service instance."""
+    try:
+        # Import the real chart service
+        from ai_service.api.services.chart.service import get_chart_service as get_real_chart_service
+        return get_real_chart_service()
+    except ImportError as e:
+        logger.error(f"Could not import real chart service: {e}")
+        raise ValueError("Chart service is required but not available")
 
 class QuestionnaireService:
     """

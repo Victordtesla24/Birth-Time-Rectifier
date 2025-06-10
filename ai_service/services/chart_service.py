@@ -333,25 +333,8 @@ class ChartService:
         Returns:
             Dictionary containing Vedic analysis results
         """
-        try:
-            # Simplified implementation to resolve linter error
-            return {
-                "vedic_compatibility": {
-                    "score": 75,
-                    "description": "Overall compatibility score based on Vedic principles"
-                },
-                "dasha_compatibility": {
-                    "current_dasha": "Compatible periods",
-                    "upcoming_periods": []
-                },
-                "nakshatra_analysis": {
-                    "compatibility": "Strong",
-                    "details": "Nakshatra positions show harmonious alignment"
-                }
-            }
-        except Exception as e:
-            logger.error(f"Error in Vedic comparison analysis: {e}")
-            return {"error": str(e)}
+        # Real implementation required - remove fake hardcoded data
+        raise NotImplementedError("Vedic comparison analysis requires real astrological calculation algorithms")
 
     def _analyze_timing_implications(self, comparison_data: Dict[str, Any]) -> Dict[str, Any]:
         """

@@ -16,8 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Import required modules
-from ai_service.app_wrapper import app_wrapper
-from ai_service.main import app
+from ai_service.main_consolidated import app
 from fastapi.testclient import TestClient
 
 # Test data
@@ -33,7 +32,7 @@ TEST_BIRTH_DETAILS = {
 @pytest.fixture
 def test_client():
     """Create a FastAPI test client."""
-    return TestClient(app_wrapper)
+    return TestClient(app)
 
 def test_session_init_endpoint(test_client):
     """
@@ -262,6 +261,12 @@ def test_chart_rectify_endpoint(test_client):
     # First generate a chart
     chart_id = test_chart_generate_endpoint(test_client)
 
+    # Define sample answers for rectification
+    answers = [
+        {"question_id": "q1", "answer": "Yes"},
+        {"question_id": "q2", "answer": "2020"},
+        {"question_id": "q3", "answer": "Career change"}
+    ]
 
     # Test rectification endpoint
     payload = {

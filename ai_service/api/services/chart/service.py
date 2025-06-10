@@ -16,48 +16,6 @@ logger = logging.getLogger(__name__)
 # Global singleton instance
 _instance = None
 
-class MockDatabaseConnection:
-    """A mock database connection for testing and development."""
-
-    def __init__(self):
-        """Initialize the mock database with in-memory storage."""
-        self.storage = {"charts": {}}
-        logger.info("Initialized MockDatabaseConnection")
-
-    async def fetch_one(self, query: str, *args, **kwargs) -> Optional[Dict[str, Any]]:
-        """Mock fetch_one operation."""
-        logger.debug(f"MockDB fetch_one: {query} with args {args}")
-        if "chart_id" in args and args[0] in self.storage["charts"]:
-            return {"chart_data": json.dumps(self.storage["charts"][args[0]])}
-        return None
-
-    async def fetch_all(self, query: str, *args, **kwargs) -> List[Dict[str, Any]]:
-        """Mock fetch_all operation."""
-        logger.debug(f"MockDB fetch_all: {query} with args {args}")
-        if "user_id" in args:
-            user_id = args[0]
-            results = []
-            for chart_id, chart_data in self.storage["charts"].items():
-                if chart_data.get("user_id") == user_id:
-                    results.append({"chart_data": json.dumps(chart_data)})
-            return results
-        return []
-
-    async def execute(self, query: str, *args, **kwargs) -> int:
-        """Mock execute operation."""
-        logger.debug(f"MockDB execute: {query} with args {args}")
-        if "INSERT INTO charts" in query and len(args) >= 2:
-            chart_id = args[0]
-            chart_data = json.loads(args[1])
-            self.storage["charts"][chart_id] = chart_data
-            return 1
-        elif "DELETE FROM charts" in query and len(args) >= 1:
-            chart_id = args[0]
-            if chart_id in self.storage["charts"]:
-                del self.storage["charts"][chart_id]
-                return 1
-        return 0
-
 class ChartService:
     """
     Database and API adapter for the canonical ChartService.
@@ -71,15 +29,13 @@ class ChartService:
         Initialize the chart service adapter.
 
         Args:
-            db_connection: Database connection (required)
+            db_connection: Database connection (optional, uses in-memory storage if not provided)
         """
-        if db_connection is None:
-            # Use a mock database connection for testing
-            logger.warning("No database connection provided, using MockDatabaseConnection")
-            db_connection = MockDatabaseConnection()
-
         self.db_connection = db_connection
-        logger.info("Chart service adapter initialized with database connection")
+        if db_connection is None:
+            logger.info("Chart service initialized without database connection - using in-memory cache only")
+        else:
+            logger.info("Chart service adapter initialized with database connection")
 
         # Initialize cache for improved performance
         self.chart_cache = {}
@@ -109,7 +65,7 @@ class ChartService:
 
     async def get_chart(self, chart_id: str) -> Dict[str, Any]:
         """
-        Retrieve chart data from database.
+        Retrieve chart data from cache or database.
 
         Args:
             chart_id: Unique identifier for the chart
@@ -126,6 +82,11 @@ class ChartService:
             if chart_id in self.chart_cache:
                 logger.debug(f"Retrieved chart {chart_id} from cache")
                 return self.chart_cache[chart_id]
+
+            # If no database connection, can only use cache
+            if self.db_connection is None:
+                logger.error(f"Chart {chart_id} not found in cache and no database connection available")
+                raise ValueError(f"Chart not found: {chart_id}")
 
             # Get chart from database
             logger.info(f"Retrieving chart {chart_id} from database")
@@ -166,7 +127,7 @@ class ChartService:
 
     async def save_chart(self, chart_data: Dict[str, Any]) -> str:
         """
-        Save chart data to database.
+        Save chart data to cache and database (if available).
 
         Args:
             chart_data: Chart data to save
@@ -188,30 +149,34 @@ class ChartService:
             if "generated_at" not in chart_data:
                 chart_data["generated_at"] = datetime.now().isoformat()
 
-            # Convert chart data to JSON
-            chart_json = json.dumps(chart_data)
-
-            # Insert or update in database
-            logger.info(f"Saving chart {chart_id} to database")
-            query = """
-                INSERT INTO charts (chart_id, chart_data, created_at, updated_at)
-                VALUES (%s, %s, NOW(), NOW())
-                ON CONFLICT (chart_id)
-                DO UPDATE SET chart_data = %s, updated_at = NOW()
-            """
-            await self.db_connection.execute(query, chart_id, chart_json, chart_json)
-
             # Store in cache for future requests
             self.chart_cache[chart_id] = chart_data
 
+            # Save to database if connection available
+            if self.db_connection is not None:
+                # Convert chart data to JSON
+                chart_json = json.dumps(chart_data)
+
+                # Insert or update in database
+                logger.info(f"Saving chart {chart_id} to database")
+                query = """
+                    INSERT INTO charts (chart_id, chart_data, created_at, updated_at)
+                    VALUES (%s, %s, NOW(), NOW())
+                    ON CONFLICT (chart_id)
+                    DO UPDATE SET chart_data = %s, updated_at = NOW()
+                """
+                await self.db_connection.execute(query, chart_id, chart_json, chart_json)
+            else:
+                logger.info(f"Saved chart {chart_id} to cache (no database connection)")
+
             return chart_id
         except Exception as e:
-            logger.error(f"Database error saving chart: {str(e)}")
+            logger.error(f"Error saving chart: {str(e)}")
             raise
 
     async def delete_chart(self, chart_id: str) -> bool:
         """
-        Delete a chart from the database.
+        Delete a chart from cache and database (if available).
 
         Args:
             chart_id: The ID of the chart to delete
@@ -223,25 +188,29 @@ class ChartService:
             Exception: For database errors
         """
         try:
-            logger.info(f"Deleting chart {chart_id} from database")
-
-            # Delete from database
-            query = "DELETE FROM charts WHERE chart_id = %s"
-            result = await self.db_connection.execute(query, chart_id)
+            deleted = False
 
             # Remove from cache if present
             if chart_id in self.chart_cache:
                 del self.chart_cache[chart_id]
+                deleted = True
+                logger.info(f"Deleted chart {chart_id} from cache")
 
-            # Check if any rows were affected
-            return result > 0
+            # Delete from database if connection available
+            if self.db_connection is not None:
+                logger.info(f"Deleting chart {chart_id} from database")
+                query = "DELETE FROM charts WHERE chart_id = %s"
+                result = await self.db_connection.execute(query, chart_id)
+                deleted = deleted or (result > 0)
+
+            return deleted
         except Exception as e:
-            logger.error(f"Database error deleting chart {chart_id}: {str(e)}")
+            logger.error(f"Error deleting chart {chart_id}: {str(e)}")
             raise
 
     async def get_charts_by_user(self, user_id: str) -> List[Dict[str, Any]]:
         """
-        Retrieve all charts for a specific user.
+        Retrieve all charts for a specific user from cache and database (if available).
 
         Args:
             user_id: The ID of the user
@@ -254,24 +223,41 @@ class ChartService:
         """
         try:
             logger.info(f"Retrieving charts for user {user_id}")
+            charts = []
+
+            # Check cache for user charts (if user_id is stored in chart data)
+            for chart_id, chart_data in self.chart_cache.items():
+                if chart_data.get("user_id") == user_id:
+                    charts.append(chart_data)
+
+            # If no database connection, return only cache results
+            if self.db_connection is None:
+                logger.info(f"Retrieved {len(charts)} charts for user {user_id} from cache (no database connection)")
+                return charts
 
             # Execute database query
             query = "SELECT chart_data FROM charts WHERE user_id = %s ORDER BY created_at DESC"
             results = await self.db_connection.fetch_all(query, user_id)
 
             # Parse chart data from database safely
-            charts = []
+            db_charts = []
             for row in results:
                 if isinstance(row, dict) and 'chart_data' in row:
                     try:
                         chart_data = json.loads(row['chart_data'])
-                        charts.append(chart_data)
+                        # Avoid duplicates from cache
+                        if chart_data.get("chart_id") not in [c.get("chart_id") for c in charts]:
+                            db_charts.append(chart_data)
                     except json.JSONDecodeError:
                         logger.warning(f"Skipped invalid chart data format for user {user_id}")
 
+            # Combine cache and database results
+            charts.extend(db_charts)
+            logger.info(f"Retrieved {len(charts)} charts for user {user_id}")
             return charts
+
         except Exception as e:
-            logger.error(f"Database error retrieving charts for user {user_id}: {str(e)}")
+            logger.error(f"Error retrieving charts for user {user_id}: {str(e)}")
             raise
 
     async def generate_chart(

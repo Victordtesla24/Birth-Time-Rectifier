@@ -7,6 +7,12 @@
       "esnext"
     ],
     "allowJs": true,
+    "types": [
+      "jest",
+      "three",
+      "node",
+      "@testing-library/jest-dom"
+    ],
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -23,12 +29,21 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types",
+      "./tests/integration"
+    ]
   },
   "include": [
     "next-env.d.ts",
+    "src/custom.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "src/types/*.d.ts",
+    "tests/integration/setup.ts",
+    "**/*.css"
   ],
   "exclude": [
     "node_modules"

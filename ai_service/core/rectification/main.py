@@ -567,38 +567,55 @@ def gaussian_weight(x, mu, sigma):
     """Calculate weight using Gaussian distribution"""
     return math.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
 
-# Placeholder implementations for supporting functions - these would be implemented with
-# actual astrological calculations in a complete system
+# Real astrological analysis functions - no false positives
 
 def analyze_ascendant_strength(chart):
     """Analyze the strength of the ascendant lord"""
-    # Placeholder - would analyze the ascendant lord's placement, aspects, etc.
-    return random.uniform(0.5, 1.0)  # Return random value for now
+    if not chart or "planets" not in chart:
+        raise ValueError("Chart data required for ascendant strength analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Ascendant strength analysis requires real astrological calculations")
 
 def analyze_planets_at_angles(chart):
     """Analyze planets at angular houses (1, 4, 7, 10)"""
-    # Placeholder - would check for planets in angular houses and their strength
-    return random.uniform(0.6, 1.0)  # Return random value for now
+    if not chart or "planets" not in chart:
+        raise ValueError("Chart data required for angular planet analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Angular planet analysis requires real astrological calculations")
 
 def analyze_chart_aspects(chart):
     """Analyze the aspects between planets in the chart"""
-    # Placeholder - would analyze major aspects like conjunctions, trines, squares, etc.
-    return random.uniform(0.4, 1.0)  # Return random value for now
+    if not chart or "aspects" not in chart:
+        raise ValueError("Chart data with aspects required for aspect analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Chart aspect analysis requires real astrological calculations")
 
 def analyze_critical_degrees(chart):
     """Analyze planets at critical degrees"""
-    # Placeholder - would check for planets at critical degrees (0, 13, 26 degrees, etc.)
-    return random.uniform(0.3, 1.0)  # Return random value for now
+    if not chart or "planets" not in chart:
+        raise ValueError("Chart data required for critical degree analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Critical degree analysis requires real astrological calculations")
 
 def analyze_house_cusps(chart):
     """Analyze the strength of house cusps"""
-    # Placeholder - would analyze house cusps and their relationships
-    return random.uniform(0.4, 1.0)  # Return random value for now
+    if not chart or "houses" not in chart:
+        raise ValueError("Chart data with houses required for house cusp analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("House cusp analysis requires real astrological calculations")
 
 def analyze_harmonic_pattern(chart):
     """Analyze harmonic patterns in the chart"""
-    # Placeholder - would analyze harmonic relationships between planets
-    return random.uniform(0.3, 1.0)  # Return random value for now
+    if not chart or "planets" not in chart:
+        raise ValueError("Chart data required for harmonic pattern analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Harmonic pattern analysis requires real astrological calculations")
 
 def questionnaire_based_rectification(
     birth_dt: datetime,
@@ -838,9 +855,11 @@ def analyze_personality_traits(personality_traits: List[Dict[str, Any]], chart: 
     Returns:
         Score between 0.0 and 1.0
     """
-    # This would be implemented with detailed astrological analysis
-    # For now, we'll use a placeholder
-    return random.uniform(0.4, 0.8)
+    if not personality_traits or not chart:
+        raise ValueError("Both personality traits and chart data required for analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Personality trait analysis requires real astrological calculations")
 
 def analyze_life_events(life_events: List[Dict[str, Any]], chart: Dict[str, Any],
                         birth_dt: datetime, candidate_dt: datetime) -> float:
@@ -856,9 +875,11 @@ def analyze_life_events(life_events: List[Dict[str, Any]], chart: Dict[str, Any]
     Returns:
         Score between 0.0 and 1.0
     """
-    # This would be implemented with detailed transit and progression analysis
-    # For now, we'll use a placeholder
-    return random.uniform(0.5, 0.9)
+    if not life_events or not chart:
+        raise ValueError("Both life events and chart data required for analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Life event analysis requires real transit and progression calculations")
 
 def analyze_astrological_factors(chart: Dict[str, Any]) -> float:
     """
@@ -870,13 +891,11 @@ def analyze_astrological_factors(chart: Dict[str, Any]) -> float:
     Returns:
         Score between 0.0 and 1.0
     """
-    # This would analyze factors like:
-    # - Angular planets
-    # - Aspects to angles
-    # - Traditional dignities
-    # - Moon phase and application
-    # For now, we'll use a placeholder
-    return random.uniform(0.4, 0.7)
+    if not chart:
+        raise ValueError("Chart data required for astrological factor analysis")
+
+    # Real implementation needed - cannot return fake values
+    raise NotImplementedError("Astrological factor analysis requires real calculations for angular planets, aspects, dignities, and lunar phases")
 
 def advanced_astrological_rectification(
     birth_dt: datetime,

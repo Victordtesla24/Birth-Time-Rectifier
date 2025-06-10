@@ -74,6 +74,10 @@ class SessionError(Exception):
     """Exception raised for session-related errors."""
     pass
 
+def get_session_id(request: Request) -> Optional[str]:
+    """Get session ID from request cookies."""
+    return request.cookies.get(SESSION_COOKIE_NAME)
+
 def enable_test_mode():
     """Enable test mode for session management (uses in-memory store)."""
     global IS_TESTING
@@ -386,12 +390,18 @@ class RedisSessionStorage(SessionStorage):
 
             if data:
                 try:
+                    data_str: str
                     # Convert bytes to string if needed
                     if isinstance(data, bytes):
-                        data = data.decode('utf-8')
+                        data_str = data.decode('utf-8')
+                    elif isinstance(data, str):
+                        data_str = data
+                    else:
+                        logger.error(f"Invalid data type {type(data)} from Redis for session {session_id}")
+                        return None
 
                     # Parse JSON data
-                    session_data = json.loads(data)
+                    session_data = json.loads(data_str)
 
                     # Check expiration if stored in session
                     if "expires_at" in session_data:
@@ -454,7 +464,7 @@ class RedisSessionStorage(SessionStorage):
 
     async def delete_session(self, session_id: str) -> bool:
         """Delete session from Redis."""
-        if not self.is_connected:
+        if not self.is_connected or not self.redis_client:
             return False
 
         try:
@@ -861,7 +871,7 @@ class SessionService:
         existing_data["last_accessed"] = datetime.now().isoformat()
 
         # Try to save session
-        if self.redis_storage.is_connected:
+        if self.redis_storage and self.redis_storage.is_connected:
             # Try Redis first
             try:
                 success = asyncio.run(self.redis_storage.set_session(session_id, existing_data))
@@ -872,8 +882,10 @@ class SessionService:
 
         # Fall back to file storage
         try:
-            success = asyncio.run(self.file_storage.set_session(session_id, existing_data))
-            return success
+            if self.file_storage:
+                success = asyncio.run(self.file_storage.set_session(session_id, existing_data))
+                return success
+            return False
         except Exception as e:
             logger.error(f"Error updating session in file: {e}")
             return False
@@ -883,7 +895,7 @@ class SessionService:
         self._init_if_needed()
 
         redis_success = True
-        if self.redis_storage.is_connected:
+        if self.redis_storage and self.redis_storage.is_connected:
             # Try Redis first
             try:
                 redis_success = asyncio.run(self.redis_storage.delete_session(session_id))
@@ -893,8 +905,10 @@ class SessionService:
 
         # Always try file storage as well
         try:
-            file_success = asyncio.run(self.file_storage.delete_session(session_id))
-            return redis_success and file_success
+            if self.file_storage:
+                file_success = asyncio.run(self.file_storage.delete_session(session_id))
+                return redis_success and file_success
+            return redis_success
         except Exception as e:
             logger.error(f"Error deleting session from file: {e}")
             return False

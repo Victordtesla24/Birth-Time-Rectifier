@@ -245,8 +245,8 @@ async def process_questionnaire_answer(session_id: str, question_id: str, answer
         answer: Answer data
     """
     logger.info(f"Processing questionnaire answer for session {session_id}, question {question_id}")
-    # TODO: Implement answer processing logic
-    # This would normally store the answer in the database and update progress
+    # Real implementation required
+    raise NotImplementedError("Questionnaire answer processing requires database integration")
 
 
 async def send_next_question(websocket: WebSocket, session_id: str) -> None:
@@ -257,26 +257,8 @@ async def send_next_question(websocket: WebSocket, session_id: str) -> None:
         websocket: WebSocket connection
         session_id: Session ID
     """
-    # TODO: Implement next question logic
-    # This would normally retrieve the next question from the database
-
-    # For now, just send a mock next question
-    await websocket.send_json({
-        "type": "next_question",
-        "question": {
-            "id": str(uuid.uuid4()),
-            "text": "What significant life event occurred around age 25?",
-            "options": [
-                "Career change",
-                "Relationship milestone",
-                "Health issue",
-                "Location change",
-                "None of these"
-            ]
-        },
-        "progress": 0.6,  # 60% complete
-        "timestamp": datetime.now().isoformat()
-    })
+    # Real implementation required
+    raise NotImplementedError("Next question retrieval requires questionnaire service integration")
 
 
 async def trigger_rectification_process(websocket: WebSocket, session_id: str, data: Dict[str, Any]) -> None:
@@ -299,27 +281,8 @@ async def trigger_rectification_process(websocket: WebSocket, session_id: str, d
         "timestamp": datetime.now().isoformat()
     })
 
-    # In a real implementation, this would spawn a background task
-    # For now, just simulate progress updates
-    for progress in [0.2, 0.4, 0.6, 0.8, 1.0]:
-        await asyncio.sleep(1)  # Simulate processing time
-
-        await websocket.send_json({
-            "type": "rectification_status",
-            "status": "in_progress" if progress < 1.0 else "completed",
-            "progress": progress,
-            "message": f"Processing rectification (step {int(progress * 5)}/5)",
-            "timestamp": datetime.now().isoformat()
-        })
-
-    # Send final result
-    await websocket.send_json({
-        "type": "rectification_result",
-        "rectified_time": "15:30:00",
-        "confidence": 87.5,
-        "message": "Birth time rectification completed",
-        "timestamp": datetime.now().isoformat()
-    })
+    # Real implementation required - remove fake simulation
+    raise NotImplementedError("Birth time rectification process requires real astrological calculations and background task integration")
 
 @router.get("/clients", response_model=Dict[str, Any])
 async def get_active_clients() -> Dict[str, Any]:

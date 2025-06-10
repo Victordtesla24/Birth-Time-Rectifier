@@ -13,36 +13,17 @@ logger = logging.getLogger(__name__)
 
 # Check for TensorFlow
 TF_AVAILABLE = False
+tf = None
 try:
     import tensorflow as tf  # type: ignore
     TF_AVAILABLE = True
+    logger.info("TensorFlow imported successfully")
 except ImportError:
-    # Define a placeholder for type checking when tensorflow is not available
-    class MockTensorflow:
-        """Mock class when tensorflow is not available."""
-        class config:
-            @staticmethod
-            def list_physical_devices(*args, **kwargs):
-                return []
-
-            class experimental:
-                @staticmethod
-                def set_memory_growth(*args, **kwargs):
-                    pass
-
-        class keras:
-            class backend:
-                @staticmethod
-                def clear_session():
-                    pass
-
-    # Create a placeholder for linter
-    tf = MockTensorflow()  # type: ignore
     logger.warning("TensorFlow not available. GPU acceleration will be disabled.")
 
 # Check for psutil (for memory tracking)
 try:
-    import psutil
+    import psutil # type: ignore
     PSUTIL_AVAILABLE = True
 except ImportError:
     PSUTIL_AVAILABLE = False
@@ -68,7 +49,7 @@ class GPUMemoryManager:
         self.initialized = False
 
         # Initialize GPU if available
-        if TF_AVAILABLE:
+        if TF_AVAILABLE and tf is not None:
             try:
                 # Try to initialize TensorFlow with GPU support
                 gpus = tf.config.list_physical_devices('GPU')
@@ -141,7 +122,7 @@ class GPUMemoryManager:
         """
         Release GPU resources when shutting down.
         """
-        if not self.is_gpu_available or not TF_AVAILABLE:
+        if not self.is_gpu_available or not TF_AVAILABLE or tf is None:
             return
 
         try:

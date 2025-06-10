@@ -69,21 +69,18 @@ from ai_service.api.services.openai import get_openai_service
 UnifiedRectificationModelType = Any
 SessionStoreType = Any
 
-# Import services with proper error handling
-try:
-    # Import but override signature to avoid type errors
-    from ai_service.api.middleware.session import get_session_id as original_get_session_id
-    def get_session_id(request=None) -> str:
-        """Get session ID wrapper to fix return type."""
-        if request is not None and callable(original_get_session_id):
-            result = original_get_session_id(request)
-            return result or ""
-        return ""
-except ImportError:
-    # Placeholder if not found
-    def get_session_id(request=None) -> str:
-        """Get session ID."""
-        return ""
+# Comment out or remove the unused get_session_id function to resolve the import error
+# def get_session_id(request=None) -> str:
+#     """Get session ID from request."""
+#     try:
+#         # Try to import and use the real function
+#         from ai_service.api.middleware.session import get_session_id as original_get_session_id
+#         if request is not None and callable(original_get_session_id):
+#             result = original_get_session_id(request)
+#             return result or ""
+#     except ImportError:
+#         pass
+#     return ""
 
 # Create our own DateTimeEncoder to avoid import issues
 class DateTimeEncoder(json.JSONEncoder):
@@ -451,52 +448,24 @@ async def get_session_responses(session_store: Any, session_id: str) -> List[Dic
         logger.error(f"Error getting session responses: {e}")
         return []
 
-# Fix WebSocket service import by creating a placeholder if not available
-class WebSocketServiceProxy:
-    """Placeholder for WebSocket service if not available."""
-
-    async def send_to_session(self, session_id: str, data: Dict[str, Any]) -> bool:
-        """
-        Send data to a WebSocket session.
-
-        Args:
-            session_id: Session ID
-            data: Data to send
-
-        Returns:
-            True if successful, False otherwise
-        """
-        # Log the attempt but don't actually do anything
-        logger.debug(f"Would send WebSocket data to session {session_id} if service was available")
-        return False
-
 def get_websocket_service():
     """
-    Get a WebSocket service instance or placeholder.
+    Get the real WebSocket service instance.
 
     Returns:
-        WebSocket service instance or placeholder
+        WebSocket service instance
+
+    Raises:
+        ImportError: If WebSocket service is not available
     """
     try:
-        # Try to import the real service - use a placeholder return type
         import importlib
         module = importlib.import_module("ai_service.utils.websocket_manager")
         get_manager = getattr(module, "get_websocket_manager")
-        websocket_manager = get_manager()
-
-        # Return a proxy that adapts the real manager
-        result = WebSocketServiceProxy()
-
-        # Manually copy the send_to_session method if it exists
-        if hasattr(websocket_manager, "send_to_session"):
-            send_method = getattr(websocket_manager, "send_to_session")
-            # Use a safer way to set attributes
-            setattr(result, "send_to_session", send_method)
-
-        return result
-    except (ImportError, AttributeError):
-        # Return placeholder
-        return WebSocketServiceProxy()
+        return get_manager()
+    except (ImportError, AttributeError) as e:
+        logger.error(f"WebSocket service is not available: {e}")
+        raise ImportError("WebSocket service is required but not available") from e
 
 def get_questionnaire_service():
     """

@@ -1,8 +1,44 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+.npm
+.eslintcache
+
+# Testing
+/coverage
+test-reports/
+coverage/
+.nyc_output/
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+pytest_cache/
+.pytest_cache/
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
 # Environment variables
-env/*
 *.env
 .env
 .env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
 # Python cache files
 __pycache__/
@@ -21,6 +57,7 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -36,7 +73,12 @@ env/
 .vscode/
 *.swp
 *.swo
+.husky/
+
+# OS
 .DS_Store
+Thumbs.db
+*.pem
 
 # Logs
 logs/
@@ -47,48 +89,19 @@ yarn-debug.log*
 yarn-error.log*
 reports/
 
-# Test coverage
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-pytest_cache/
-.pytest_cache/
-
-# Distribution
-dist/
-build/
-
 # Vercel
 .vercel
 .vercel/
-.next/
-out/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # Runtime data
 pids
 *.pid
 *.seed
 *.pid.lock
-
-# Testing
-coverage/
-node_modules/
-
-# Dev Containers
-.devcontainer/
-
-# VSCode
-.vscode/
-
-# Virtual Machines and Environments
-.venv/
-venv/
 
 # Ephemeris Files
 ephemeris/*
@@ -105,4 +118,19 @@ ephemeris/*
 *api_key*
 *secret_key*
 *secretkey*
-.venv/
+
+# Backups
+.backups/
+*.bak
+*.backup
+codebase_backup_*
+pre_reorganization_backup_*
+*.tar.gz
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Dev Containers
+.devcontainer/

@@ -1,0 +1,27 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "types": [
+            "node",
+            "jest",
+            "@testing-library/jest-dom"
+        ],
+        "typeRoots": [
+            "node_modules/@types",
+            "node_modules/@testing-library"
+        ]
+    },
+    "include": [
+        "src/**/*.spec.ts",
+        "src/**/*.spec.tsx",
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx",
+        "jest.setup.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "build",
+        "dist",
+        "coverage"
+    ]
+} 

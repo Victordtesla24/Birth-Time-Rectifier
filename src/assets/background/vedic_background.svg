@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+    <!-- Outer decorative circle -->
+    <circle cx="400" cy="400" r="390" 
+            fill="none" 
+            stroke="#E1E1E1" 
+            stroke-width="2"/>
+    
+    <!-- Inner decorative pattern -->
+    <circle cx="400" cy="400" r="360" 
+            fill="none" 
+            stroke="#E1E1E1" 
+            stroke-width="1" 
+            stroke-dasharray="4,4"/>
+    
+    <!-- Main chart square -->
+    <rect x="100" y="100" width="600" height="600" 
+          fill="none" 
+          stroke="#333333" 
+          stroke-width="2"/>
+    
+    <!-- Diagonal lines -->
+    <line x1="100" y1="100" x2="700" y2="700" 
+          stroke="#333333" 
+          stroke-width="1"/>
+    <line x1="700" y1="100" x2="100" y2="700" 
+          stroke="#333333" 
+          stroke-width="1"/>
+    
+    <!-- House divisions -->
+    <g stroke="#333333" stroke-width="1">
+        <!-- Vertical divisions -->
+        <line x1="300" y1="100" x2="300" y2="700"/>
+        <line x1="500" y1="100" x2="500" y2="700"/>
+        
+        <!-- Horizontal divisions -->
+        <line x1="100" y1="300" x2="700" y2="300"/>
+        <line x1="100" y1="500" x2="700" y2="500"/>
+    </g>
+    
+    <!-- Decorative corners -->
+    <g fill="none" stroke="#B39DDB" stroke-width="1">
+        <path d="M90,90 Q100,100 110,90"/>
+        <path d="M690,90 Q700,100 710,90"/>
+        <path d="M90,710 Q100,700 110,710"/>
+        <path d="M690,710 Q700,700 710,710"/>
+    </g>
+    
+    <!-- Sanskrit Om symbol at the center -->
+    <path d="M380,380 C390,370 410,370 420,380 C430,390 430,410 420,420 C410,430 390,430 380,420 C370,410 370,390 380,380 Z" 
+          fill="none" 
+          stroke="#B39DDB" 
+          stroke-width="1"/>
+</svg> 

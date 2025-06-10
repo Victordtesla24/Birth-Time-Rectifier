@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="32" failures="9" errors="0" time="15.277">
+  <testsuite name="AnimationManager" errors="0" failures="0" skipped="0" timestamp="2025-02-16T01:07:52" time="5.931" tests="6">
+    <testcase classname="AnimationManager" name="should initialize with default values" time="0.007">
+    </testcase>
+    <testcase classname="AnimationManager" name="should add animation and return id" time="0.014">
+    </testcase>
+    <testcase classname="AnimationManager" name="should remove animation" time="0.001">
+    </testcase>
+    <testcase classname="AnimationManager" name="should play and pause animation" time="0.002">
+    </testcase>
+    <testcase classname="AnimationManager" name="should update animation frames" time="0">
+    </testcase>
+    <testcase classname="AnimationManager" name="should cleanup all animations" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="System Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-02-16T01:07:52" time="6.48" tests="3">
+    <testcase classname="System Integration Tests" name="API healthcheck returns expected response" time="0.01">
+    </testcase>
+    <testcase classname="System Integration Tests" name="Session functionality works correctly" time="0.002">
+    </testcase>
+    <testcase classname="System Integration Tests" name="Birth time rectification endpoint works" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Test Logging System" errors="0" failures="0" skipped="0" timestamp="2025-02-16T01:07:52" time="6.376" tests="4">
+    <testcase classname="Test Logging System" name="demonstrates logging functionality" time="0.01">
+    </testcase>
+    <testcase classname="Test Logging System" name="handles error logging" time="0.002">
+    </testcase>
+    <testcase classname="Test Logging System" name="handles warning logging" time="0">
+    </testcase>
+    <testcase classname="Test Logging System" name="handles debug logging" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="FormManager" errors="0" failures="1" skipped="0" timestamp="2025-02-16T01:07:52" time="6.495" tests="7">
+    <testcase classname="FormManager" name="should initialize with correct default values" time="0.039">
+    </testcase>
+    <testcase classname="FormManager" name="should validate required fields" time="0.012">
+    </testcase>
+    <testcase classname="FormManager" name="should handle navigation between steps" time="0.049">
+    </testcase>
+    <testcase classname="FormManager" name="should add and remove event cards" time="0.017">
+    </testcase>
+    <testcase classname="FormManager" name="should handle form submission" time="0.024">
+    </testcase>
+    <testcase classname="FormManager" name="should update progress bar" time="0.008">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;33%&quot;
+Received: &quot;&quot;
+    at Object.toBe (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/form.test.tsx:162:45)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="FormManager" name="should handle event bus events" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="useChartInteraction" errors="0" failures="0" skipped="0" timestamp="2025-02-16T01:07:52" time="6.711" tests="3">
+    <testcase classname="useChartInteraction" name="handles zoom interactions correctly" time="0.046">
+    </testcase>
+    <testcase classname="useChartInteraction" name="handles pan interactions correctly" time="0.062">
+    </testcase>
+    <testcase classname="useChartInteraction" name="resets transformations correctly" time="0.02">
+    </testcase>
+  </testsuite>
+  <testsuite name="Animation Component" errors="0" failures="8" skipped="0" timestamp="2025-02-16T01:07:52" time="8.042" tests="9">
+    <testcase classname="Animation Component" name="renders without crashing" time="0.649">
+    </testcase>
+    <testcase classname="Animation Component" name="initializes animation manager with correct props" time="0.036">
+      <failure>Error: expect(received).toHaveBeenCalledWith(...expected)
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalledWith (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:35:47)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="Animation Component" name="handles play button click" time="0.208">
+      <failure>Error: expect(received).toHaveBeenCalled()
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalled (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:44:39)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="Animation Component" name="handles pause button click" time="0.126">
+      <failure>Error: expect(received).toHaveBeenCalled()
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalled (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:51:40)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="Animation Component" name="handles resume button click" time="0.038">
+      <failure>Error: expect(received).toHaveBeenCalled()
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalled (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:58:41)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="Animation Component" name="cleans up resources on unmount" time="0.017">
+      <failure>Error: expect(received).toHaveBeenCalled()
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalled (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:64:42)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="Animation Component" name="starts animation automatically when autoplay is true" time="0.123">
+      <failure>Error: expect(received).toHaveBeenCalled()
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalled (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:69:39)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="Animation Component" name="does not start animation automatically when autoplay is false" time="0.085">
+      <failure>Error: expect(received).not.toHaveBeenCalled()
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalled (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:74:43)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+    <testcase classname="Animation Component" name="updates animation when frames prop changes" time="0.032">
+      <failure>Error: expect(received).toHaveBeenCalled()
+
+Matcher error: received value must be a mock or spy function
+
+Received has value: undefined
+    at Object.toHaveBeenCalled (/Users/Shared/cursor/Birth-Time-Rectifier/src/__tests__/unit/components/Animation.test.tsx:81:50)
+    at Promise.then.completed (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+    at run (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/opt/homebrew/lib/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/opt/homebrew/lib/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

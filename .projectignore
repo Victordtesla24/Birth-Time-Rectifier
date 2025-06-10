@@ -1,0 +1,41 @@
+# Consolidated project ignore rules
+# Combines rules from .clineignore and .cursorignore
+
+# Exclude build and distribution directories
+/dist/
+/build/
+tmp/
+
+# Exclude dependency directories
+node_modules/
+venv/
+__pycache__/
+
+# Ignore version control
+.git/
+
+# Ignore log and temporary files
+*.tmp
+*.bak
+*.backup.md
+*.old.md
+memlog/
+
+# Skip non-essential assets
+*.tif*
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.pdf
+
+# Explicitly include critical configuration files
+!package.json
+!package-lock.json
+!tsconfig.json
+!requirements.txt 

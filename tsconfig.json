@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"],
+      "@components/*": ["components/*"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"],
+      "@tests/*": ["__tests__/*"],
+      "@mocks/*": ["__tests__/mocks/*"],
+      "@theme": ["theme"],
+      "@api/*": ["services/api/*"],
+      "@mui/material/*": ["__tests__/mocks/mui/mui.tsx"],
+      "@mui/icons-material/*": ["__tests__/mocks/mui/mui-icons.tsx"],
+      "@mui/lab/*": ["__tests__/mocks/mui/mui-lab.tsx"],
+      "@mui/x-date-pickers/*": ["__tests__/mocks/mui/mui-lab.tsx"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+} 
